@@ -455,6 +455,8 @@ function navigate(view,id){
 function renderDashboard(){
   const overdue=db.tasks.filter(t=>t.due_date&&new Date(t.due_date)<new Date()&&t.status!=='Complete').length;
   const done=db.tasks.filter(t=>t.status==='Complete').length;
+  const total=db.tasks.length;
+  const overallPct=total?Math.round(done/total*100):0;
   const open=db.tasks.filter(t=>t.status!=='Complete').sort((a,b)=>(a.due_date||'z').localeCompare(b.due_date||'z')).slice(0,15);
   const today=new Date();
   const rows=open.length?open.map(t=>{
@@ -462,13 +464,89 @@ function renderDashboard(){
     const od=t.due_date&&new Date(t.due_date)<today;
     return`<tr class="clickable" onclick="navigate('episode-tasks','${t.episode_id}')"><td>${t.name}</td><td>${ep?`<span class="ep-num">${ep.default_title||'E'+ep.number}</span> ${ep.title||''}`:'—'}</td><td>${pod?pod.name:'—'}</td><td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">Unassigned</span>'}</td><td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td><td><button class="status-pill ${scls(t.status)}" onclick="event.stopPropagation();qCycle('${t.id}')">${t.status}</button></td></tr>`;
   }).join(''):`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">All clear! 🎉</td></tr>`;
-  document.getElementById('view-dashboard').innerHTML=`<div class="stats-row"><div class="stat-card"><div class="stat-num">${db.podcasts.length}</div><div class="stat-label">Podcasts</div></div><div class="stat-card"><div class="stat-num">${db.episodes.length}</div><div class="stat-label">Episodes</div></div><div class="stat-card"><div class="stat-num" style="color:#e05050">${overdue}</div><div class="stat-label">Overdue</div></div><div class="stat-card"><div class="stat-num" style="color:var(--complete-text)">${done}</div><div class="stat-label">Complete</div></div></div><div class="section-header"><div class="section-title">Open Tasks</div></div><table><thead><tr><th>Task</th><th>Episode</th><th>Podcast</th><th>Assigned To</th><th>Due</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+
+  // Podcast progress rows
+  const podRows=db.podcasts.map(p=>{
+    const taskPct=podcastProgress(p.id);
+    const epInfo=podcastEpisodeProgress(p.id);
+    const pct=taskPct===null?0:taskPct;
+    const color=pct===100?'var(--complete-text)':pct>50?'var(--accent)':'var(--accent2)';
+    return`<tr class="clickable" onclick="navigate('episodes','${p.id}')">
+      <td><strong>${p.name}</strong><br><span style="font-size:11px;color:var(--text-muted)">${p.company||''}</span></td>
+      <td>${epInfo?`${epInfo.complete} of ${epInfo.total} episodes complete`:'—'}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="flex:1;max-width:160px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:11px;color:var(--text-muted)">Tasks</span>
+              <span style="font-size:11px;font-weight:600;color:${color}">${pct}%</span>
+            </div>
+            <div class="progress-bar" style="width:100%"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+          </div>
+          <div style="position:relative;width:40px;height:40px;flex-shrink:0">
+            ${progressRing(pct,40,4,color)}
+            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:${color}">${pct}%</span>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('view-dashboard').innerHTML=`
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">${db.podcasts.length}</div><div class="stat-label">Podcasts</div></div>
+      <div class="stat-card"><div class="stat-num">${db.episodes.length}</div><div class="stat-label">Episodes</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#e05050">${overdue}</div><div class="stat-label">Overdue</div></div>
+      <div class="stat-card">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div>
+            <div class="stat-num" style="color:var(--complete-text)">${overallPct}%</div>
+            <div class="stat-label">Overall Complete</div>
+          </div>
+          <div style="position:relative;width:48px;height:48px;flex-shrink:0">
+            ${progressRing(overallPct,48,4,'var(--complete-text)')}
+            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--complete-text)">${overallPct}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header"><div class="section-title">Podcast Progress</div></div>
+    <table style="margin-bottom:32px">
+      <thead><tr><th>Podcast</th><th>Episodes</th><th>Task Completion</th></tr></thead>
+      <tbody>${podRows||'<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--text-muted)">No podcasts yet.</td></tr>'}</tbody>
+    </table>
+
+    <div class="section-header"><div class="section-title">Open Tasks</div></div>
+    <table><thead><tr><th>Task</th><th>Episode</th><th>Podcast</th><th>Assigned To</th><th>Due</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 function renderPodcasts(){
   const el=document.getElementById('view-podcasts');
   if(!db.podcasts.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🎙</div><div class="empty-title">No podcasts yet</div><div class="empty-sub">Create your first podcast to get started.</div><button class="btn" onclick="openNewPodcastModal()">+ New Podcast</button></div>`;return;}
-  el.innerHTML=`<div class="card-grid">${db.podcasts.map(p=>{const ec=db.episodes.filter(e=>e.podcast_id===p.id).length,prod=pById(p.producer),ep=pById(p.ep);return`<div class="card" onclick="navigate('episodes','${p.id}')"><div class="card-actions"><div class="icon-btn danger" onclick="event.stopPropagation();deletePodcast('${p.id}')">🗑</div></div><div class="card-label">${p.company||''} ${p.contact?'· '+p.contact:''}</div><div class="card-title">${p.name}</div><div class="card-meta"><span class="card-badge badge-${(p.type||'interview').toLowerCase()}">${p.type}</span><br>${ec} episode${ec!==1?'s':''} · Season ${p.season} · ${p.frequency}<br>EP: ${ep?ep.name:'—'} · Producer: ${prod?prod.name:'—'}</div></div>`;}).join('')}</div>`;
+  el.innerHTML=`<div class="card-grid">${db.podcasts.map(p=>{
+    const ec=db.episodes.filter(e=>e.podcast_id===p.id).length,prod=pById(p.producer),ep=pById(p.ep);
+    const taskPct=podcastProgress(p.id),epInfo=podcastEpisodeProgress(p.id);
+    const pct=taskPct===null?0:taskPct;
+    const color=pct===100?'var(--complete-text)':pct>50?'var(--accent)':'var(--accent2)';
+    return`<div class="card" onclick="navigate('episodes','${p.id}')">
+      <div class="card-actions"><div class="icon-btn danger" onclick="event.stopPropagation();deletePodcast('${p.id}')">🗑</div></div>
+      <div class="card-label">${p.company||''} ${p.contact?'· '+p.contact:''}</div>
+      <div class="card-title">${p.name}</div>
+      <div class="card-meta">
+        <span class="card-badge badge-${(p.type||'interview').toLowerCase()}">${p.type}</span><br>
+        ${ec} episode${ec!==1?'s':''} · Season ${p.season} · ${p.frequency}<br>
+        EP: ${ep?ep.name:'—'} · Producer: ${prod?prod.name:'—'}
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:11px;color:var(--text-muted)">${epInfo?`${epInfo.complete}/${epInfo.total} episodes done`:'No episodes yet'}</span>
+          <span style="font-size:12px;font-weight:600;color:${color}">${pct}%</span>
+        </div>
+        <div class="progress-bar" style="width:100%"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
 }
 
 async function deletePodcast(id){
@@ -533,6 +611,29 @@ async function qCycle(id){
   setSync('syncing');
   try{await api.patch('tasks',id,{status:t.status});setSync('live');if(currentView==='dashboard')renderDashboard();else if(currentView==='tasks')renderAllTasks();else if(currentView==='mytasks')renderMyTasks();}
   catch(e){setSync('error');notify('Save failed',true);}
+}
+
+
+function podcastProgress(podcastId){
+  const epIds=db.episodes.filter(e=>e.podcast_id===podcastId).map(e=>e.id);
+  const tasks=db.tasks.filter(t=>epIds.includes(t.episode_id));
+  if(!tasks.length)return null;
+  return Math.round(tasks.filter(t=>t.status==='Complete').length/tasks.length*100);
+}
+
+function podcastEpisodeProgress(podcastId){
+  const eps=db.episodes.filter(e=>e.podcast_id===podcastId);
+  if(!eps.length)return null;
+  const complete=eps.filter(e=>epStatus(e.id)==='Complete').length;
+  return{complete,total:eps.length,pct:Math.round(complete/eps.length*100)};
+}
+
+function progressRing(pct,size,stroke,color){
+  const r=(size-stroke)/2,circ=2*Math.PI*r,offset=circ-(pct/100)*circ;
+  return`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+  </svg>`;
 }
 
 function populateTaskFilters(){document.getElementById('filterPodcast').innerHTML='<option value="">All Podcasts</option>'+db.podcasts.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');}
