@@ -29,7 +29,7 @@ Keep these somewhere safe (not in this file once it's in GitHub).
 
 ## How to update the app
 
-1. Make changes with Claude (start a new conversation and explain what you want — share this README for context)
+1. Make changes with Claude (start a new conversation and share this README for context)
 2. Download the new `bengo-workflow.html` file
 3. Rename it to `index.html`
 4. Go to your GitHub repo → click `index.html` → click the pencil icon → drag and drop the new file, or use **Add file > Upload files**
@@ -37,6 +37,8 @@ Keep these somewhere safe (not in this file once it's in GitHub).
 6. Wait 1-2 minutes — the live URL updates automatically
 
 That's the whole deployment process.
+
+> **Note for future Claude sessions:** Always update `README.md` and `TEAM-GUIDE.md` at the end of each build session.
 
 ---
 
@@ -148,7 +150,9 @@ To add, remove or rename a task from the template, you need to update the code. 
 
 | Feature | Where | Notes |
 |---|---|---|
-| Dashboard | ⬡ Dashboard | Open tasks, overdue count, headline stats |
+| Dashboard | ⬡ Dashboard | Open tasks, overdue count, overall % complete with progress ring |
+| Podcast progress | ⬡ Dashboard | Per-podcast progress bar, episodes done, task % complete |
+| Podcast cards | 🎙 Podcasts | Progress bar and % on each card, colour coded |
 | Podcast management | 🎙 Podcasts | Create with auto-generated episodes + tasks |
 | Episode tasks | Podcasts → Episode | Task list per episode, click status to cycle |
 | All Tasks — Table | ✅ All Tasks | Filterable by status, podcast, role |
@@ -158,6 +162,16 @@ To add, remove or rename a task from the template, you need to update the code. 
 | Freestanding to-dos | 📝 To-Do | Not tied to episodes, assignable to anyone |
 | Invoice tracking | Episode tasks | EP confirms amount → Accounts raises → Payment received |
 | People management | 👥 People | Add/edit team, roles, access level |
+
+---
+
+## Progress colour coding
+
+The progress bars and rings use the same colour logic throughout:
+
+- **Orange** — 0–50% complete
+- **Gold** — 51–99% complete
+- **Green** — 100% complete
 
 ---
 
@@ -195,7 +209,7 @@ To add, remove or rename a task from the template, you need to update the code. 
 
 ## Updating these docs
 
-Both docs (`README.md` for you, `TEAM-GUIDE.md` for the team) live in the GitHub repo alongside `index.html`. Update them whenever a new feature is added — just ask Claude to do it at the end of each build session.
+Both docs (`README.md` for you, `TEAM-GUIDE.md` for the team) live in the GitHub repo alongside `index.html`. Always ask Claude to update them at the end of each build session.
 
 ---
 
