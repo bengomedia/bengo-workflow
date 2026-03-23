@@ -1,3 +1,8 @@
+# Bengo Workflow — Technical README
+
+For Emma. Everything you need to know to maintain, update and not break this thing.
+
+---
 
 ## What this is
 
@@ -24,7 +29,7 @@ Keep these somewhere safe (not in this file once it's in GitHub).
 
 ## How to update the app
 
-1. Make changes here with Claude (just paste the conversation link or start a new one and explain what you want)
+1. Make changes with Claude (start a new conversation and explain what you want — share this README for context)
 2. Download the new `bengo-workflow.html` file
 3. Rename it to `index.html`
 4. Go to your GitHub repo → click `index.html` → click the pencil icon → drag and drop the new file, or use **Add file > Upload files**
@@ -85,7 +90,7 @@ Five tables in Supabase. You can view and edit data directly in the Supabase Tab
 | role | text | Role responsible |
 | assigned_to | text | FK → people.id |
 | status | text | To Do / In Progress / Waiting / Blocked / Complete |
-| due_date | date | Calculated from launch date - days before |
+| due_date | date | Calculated from launch date minus days offset |
 | start_date | date | Optional |
 | task_order | integer | Display order |
 | notes | text | |
@@ -112,7 +117,7 @@ The task templates live **in the app code** (not in the database). They're defin
 - `order` — display order
 - `days` — how many days before launch date the task is due
 
-To add, remove or rename a task from the template, you need to update the code. Come back here with Claude and ask for the change — it takes about 2 minutes.
+To add, remove or rename a task from the template, you need to update the code. Come back to Claude and ask for the change — it takes about 2 minutes. Note: changing templates only affects **new** episodes created after the change. Existing episode tasks are unaffected.
 
 ---
 
@@ -139,12 +144,29 @@ To add, remove or rename a task from the template, you need to update the code. 
 
 ---
 
+## Features summary
+
+| Feature | Where | Notes |
+|---|---|---|
+| Dashboard | ⬡ Dashboard | Open tasks, overdue count, headline stats |
+| Podcast management | 🎙 Podcasts | Create with auto-generated episodes + tasks |
+| Episode tasks | Podcasts → Episode | Task list per episode, click status to cycle |
+| All Tasks — Table | ✅ All Tasks | Filterable by status, podcast, role |
+| All Tasks — Kanban | ✅ All Tasks → ⊞ Kanban | Toggle in top right of filters bar |
+| My Tasks | 👤 My Tasks | Episode tasks + to-dos combined, per person |
+| Gantt chart | 📊 Gantt | Timeline view, click episode to expand tasks |
+| Freestanding to-dos | 📝 To-Do | Not tied to episodes, assignable to anyone |
+| Invoice tracking | Episode tasks | EP confirms amount → Accounts raises → Payment received |
+| People management | 👥 People | Add/edit team, roles, access level |
+
+---
+
 ## If something breaks
 
 **App won't load / "Could not connect" message**
 - Check your internet connection
 - Check Supabase is up: https://status.supabase.com
-- Check the API key in the code matches what's in Supabase Settings > API Keys
+- Check the API key in the code matches Supabase Settings > API Keys
 
 **Data looks wrong or missing**
 - Go to Supabase → Table Editor and check the data directly
@@ -154,28 +176,27 @@ To add, remove or rename a task from the template, you need to update the code. 
 - Supabase keeps point-in-time backups on paid plans; the free tier doesn't have this
 - Worth upgrading to Pro ($25/month) if the data becomes business-critical
 
-**Need to add a new role to the task templates**
+**Need to change the task templates**
 - Come back to Claude with this README and ask for the change
-- Explain which role, which tasks, and which podcast types it applies to
+- Explain which tasks, which roles, and which podcast types are affected
 
 ---
 
 ## Future things worth considering
 
-- **Proper login/auth** — right now anyone with the URL can read and write data. Fine for internal use, but worth locking down if the URL ever gets shared outside the team. Supabase has built-in auth that Claude can wire up.
-- **Email notifications** — Supabase can trigger emails when tasks are assigned or overdue. Doable but needs a bit more work.
-- **Supabase Pro** — $25/month gets you backups, more storage, and better performance. Not needed yet but worth it once this becomes genuinely business-critical.
-- **Mobile view** — the app works on mobile but isn't optimised for it. Fixable if the team start using it on phones.
+- **Email notifications** — alert people when tasks are assigned or overdue. Already discussed, ready to build when you want it.
+- **Data import** — bulk upload existing podcasts/todos from a spreadsheet rather than entering one by one.
+- **File attachments** — PDFs, audio, artwork attached to episodes. Supabase Storage handles this.
+- **Proper login/auth** — right now anyone with the URL can read and write. Fine internally, worth locking down if the URL ever gets shared outside the team.
+- **Supabase Pro** — $25/month gets you backups, more storage and better performance. Not needed yet.
+- **Mobile optimisation** — the app works on mobile but isn't designed for it. Fixable if the team want it.
 
 ---
 
-## Updating this README
+## Updating these docs
 
-Keep this file updated when you make changes to the app. Specifically update the task template table and the database structure section if those change.
-
-Both docs (`README.md` for you, `TEAM-GUIDE.md` for the team) live in the same GitHub repo as `index.html`.
+Both docs (`README.md` for you, `TEAM-GUIDE.md` for the team) live in the GitHub repo alongside `index.html`. Update them whenever a new feature is added — just ask Claude to do it at the end of each build session.
 
 ---
 
 *Last updated: March 2026*
-
