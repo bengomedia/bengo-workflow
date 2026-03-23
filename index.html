@@ -127,6 +127,29 @@
   .gantt-ep-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .gantt-scroll{flex:1;overflow-x:auto;overflow-y:hidden;}
   #ganttCanvas{display:block;}
+
+  /* KANBAN */
+  .view-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-left:auto;}
+  .view-toggle-btn{background:transparent;border:none;color:var(--text-muted);padding:6px 14px;cursor:pointer;font-family:'Varela Round',sans-serif;font-size:12px;transition:all .15s;}
+  .view-toggle-btn.active{background:var(--accent);color:#1a1400;font-weight:600;}
+  .view-toggle-btn:hover:not(.active){background:var(--surface2);color:var(--text);}
+  .kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start;}
+  .kanban-col{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .kanban-col-header{padding:12px 14px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+  .kanban-col-header.todo{color:var(--todo-text);background:rgba(74,71,64,.2);}
+  .kanban-col-header.inprogress{color:var(--inprogress-text);background:rgba(26,74,122,.2);}
+  .kanban-col-header.waiting{color:var(--waiting-text);background:rgba(74,42,0,.2);}
+  .kanban-col-header.complete{color:var(--complete-text);background:rgba(26,74,42,.2);}
+  .kanban-col-count{font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1px 7px;}
+  .kanban-cards{padding:10px;display:flex;flex-direction:column;gap:8px;min-height:60px;}
+  .kanban-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;transition:all .15s;}
+  .kanban-card:hover{border-color:var(--accent);}
+  .kanban-card-title{font-size:13px;color:var(--text);margin-bottom:6px;line-height:1.4;}
+  .kanban-card-meta{font-size:11px;color:var(--text-muted);display:flex;flex-direction:column;gap:3px;}
+  .kanban-card-ep{color:var(--accent);font-family:'DM Serif Display',serif;}
+  .kanban-card-overdue{color:#e05050;}
+  .kanban-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:20px 10px;}
+
 </style>
 </head>
 <body>
@@ -193,8 +216,17 @@
           <select class="filter-select" id="filterStatus" onchange="renderAllTasks()"><option value="">All Statuses</option><option>To Do</option><option>In Progress</option><option>Waiting / Blocked</option><option>Complete</option></select>
           <select class="filter-select" id="filterPodcast" onchange="renderAllTasks()"><option value="">All Podcasts</option></select>
           <select class="filter-select" id="filterRole" onchange="renderAllTasks()"><option value="">All Roles</option><option>Producer</option><option>Editor</option><option>Executive Producer</option><option>Accounts</option></select>
+          <div class="view-toggle">
+            <button class="view-toggle-btn active" id="toggleTable" onclick="setTaskView('table')">≡ Table</button>
+            <button class="view-toggle-btn" id="toggleKanban" onclick="setTaskView('kanban')">⊞ Kanban</button>
+          </div>
         </div>
-        <table><thead><tr><th>Task</th><th>Episode</th><th>Podcast</th><th>Assigned To</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="allTasksBody"></tbody></table>
+        <div id="tasksTableView">
+          <table><thead><tr><th>Task</th><th>Episode</th><th>Podcast</th><th>Assigned To</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="allTasksBody"></tbody></table>
+        </div>
+        <div id="tasksKanbanView" class="hidden">
+          <div class="kanban-board" id="kanbanBoard"></div>
+        </div>
       </div>
 
       <div id="view-mytasks" class="hidden"></div>
@@ -505,17 +537,69 @@ async function qCycle(id){
 
 function populateTaskFilters(){document.getElementById('filterPodcast').innerHTML='<option value="">All Podcasts</option>'+db.podcasts.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');}
 
-function renderAllTasks(){
+let taskViewMode = 'table';
+
+function setTaskView(mode){
+  taskViewMode = mode;
+  document.getElementById('toggleTable').classList.toggle('active', mode==='table');
+  document.getElementById('toggleKanban').classList.toggle('active', mode==='kanban');
+  document.getElementById('tasksTableView').classList.toggle('hidden', mode!=='table');
+  document.getElementById('tasksKanbanView').classList.toggle('hidden', mode!=='kanban');
+  renderAllTasks();
+}
+
+function getFilteredTasks(){
   const sf=document.getElementById('filterStatus').value,pf=document.getElementById('filterPodcast').value,rf=document.getElementById('filterRole').value;
   let tasks=[...db.tasks];
-  if(sf)tasks=tasks.filter(t=>t.status===sf);if(rf)tasks=tasks.filter(t=>t.role===rf);
+  if(sf)tasks=tasks.filter(t=>t.status===sf);
+  if(rf)tasks=tasks.filter(t=>t.role===rf);
   if(pf){const eids=db.episodes.filter(e=>e.podcast_id===pf).map(e=>e.id);tasks=tasks.filter(t=>eids.includes(t.episode_id));}
   tasks.sort((a,b)=>(a.due_date||'z').localeCompare(b.due_date||'z'));
+  return tasks;
+}
+
+function renderAllTasks(){
+  if(taskViewMode==='kanban'){renderKanban();return;}
+  const tasks=getFilteredTasks();
   const today=new Date();
   document.getElementById('allTasksBody').innerHTML=tasks.length?tasks.map(t=>{
     const ep=epById(t.episode_id),pod=ep?podById(ep.podcast_id):null,person=t.assigned_to?pById(t.assigned_to):null,od=t.due_date&&new Date(t.due_date)<today&&t.status!=='Complete';
     return`<tr class="clickable" onclick="navigate('episode-tasks','${t.episode_id}')"><td>${t.name}</td><td>${ep?`<span class="ep-num">${ep.default_title||'E'+ep.number}</span> ${ep.title||''}`:'—'}</td><td>${pod?pod.name:'—'}</td><td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">Unassigned</span>'}</td><td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td><td><button class="status-pill ${scls(t.status)}" onclick="event.stopPropagation();qCycle('${t.id}')">${t.status}</button></td></tr>`;
   }).join(''):`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">No tasks match your filters.</td></tr>`;
+}
+
+function renderKanban(){
+  const tasks=getFilteredTasks();
+  const today=new Date();
+  const cols=[
+    {key:'To Do',cls:'todo',label:'To Do'},
+    {key:'In Progress',cls:'inprogress',label:'In Progress'},
+    {key:'Waiting / Blocked',cls:'waiting',label:'Waiting'},
+    {key:'Complete',cls:'complete',label:'Complete'},
+  ];
+  document.getElementById('kanbanBoard').innerHTML=cols.map(col=>{
+    const colTasks=tasks.filter(t=>t.status===col.key);
+    const cards=colTasks.length?colTasks.map(t=>{
+      const ep=epById(t.episode_id),pod=ep?podById(ep.podcast_id):null,person=t.assigned_to?pById(t.assigned_to):null;
+      const od=t.due_date&&new Date(t.due_date)<today&&t.status!=='Complete';
+      return`<div class="kanban-card" onclick="qCycle('${t.id}');setTimeout(renderKanban,300)">
+        <div class="kanban-card-title">${t.name}</div>
+        <div class="kanban-card-meta">
+          ${ep?`<span class="kanban-card-ep">${ep.default_title||'E'+ep.number}${ep.title?' · '+ep.title:''}</span>`:''}
+          ${pod?`<span>${pod.name}</span>`:''}
+          ${person?`<span>${person.name}</span>`:''}
+          ${t.due_date?`<span class="${od?'kanban-card-overdue':''}">${od?'⚠ ':''}${formatDate(t.due_date)}</span>`:''}
+        </div>
+      </div>`;
+    }).join(''):`<div class="kanban-empty">Nothing here</div>`;
+    return`<div class="kanban-col">
+      <div class="kanban-col-header ${col.cls}">
+        <span>${col.label}</span>
+        <span class="kanban-col-count">${colTasks.length}</span>
+      </div>
+      <div class="kanban-cards">${cards}</div>
+    </div>`;
+  }).join('');
 }
 
 function onUserChange(){currentUser=document.getElementById('currentUser').value;if(currentView==='mytasks')renderMyTasks();}
