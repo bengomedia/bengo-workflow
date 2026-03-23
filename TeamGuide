@@ -1,0 +1,115 @@
+# 🎙 Bengo Workflow — Your Guide to Getting Stuff Done
+
+Welcome to the Bengo Workflow app! It's where episodes get made, tasks get ticked off, and nothing falls through the cracks. Think of it as the behind-the-scenes magic that keeps the Bengoverse running smoothly.
+
+Bookmark the link. Open it every day. That's it, really — but read on for the full picture.
+
+---
+
+## The big idea
+
+Every podcast we make follows a workflow — from booking the studio right through to the invoice being paid. This app tracks all of it, episode by episode, so everyone knows what they're doing, what's next, and what's overdue.
+
+No more "I thought you were doing that." No more sticky notes. No more Monday (RIP).
+
+---
+
+## Finding your way around
+
+The sidebar on the left is your nav. Here's what each section does:
+
+| Section | What it's for |
+|---|---|
+| ⬡ **Dashboard** | The big picture — overdue tasks, open work, headline stats |
+| 🎙 **Podcasts** | All the shows we're making, one card per podcast |
+| ✅ **All Tasks** | Every task across every episode — filterable by status, podcast or role |
+| 👤 **My Tasks** | Your personal view — episode tasks AND to-dos in one place |
+| 📊 **Gantt** | The timeline view — episodes and tasks plotted across the calendar |
+| 📝 **To-Do** | Freestanding tasks that aren't tied to a specific episode |
+| 👥 **People** | The team |
+
+---
+
+## Your daily routine (60 seconds, tops)
+
+1. Open the app
+2. Hit **My Tasks** in the sidebar
+3. Select your name from the **"Viewing as"** dropdown at the bottom left
+4. Work through your tasks — click the status pill to cycle it forward
+5. Done for the day ✨
+
+That's genuinely it for most days.
+
+---
+
+## Task statuses
+
+Click any status pill to move a task forward. They cycle in this order:
+
+**To Do → In Progress → Waiting / Blocked → Complete**
+
+Use **Waiting / Blocked** if you're stuck and need someone else to act first. That way it's visible rather than invisible.
+
+---
+
+## Episodes and tasks
+
+When a new episode is created, all the tasks for that episode are generated automatically — assigned to the right person, with due dates calculated back from the launch date.
+
+You don't need to create tasks manually. If something's missing, flag it to Emma.
+
+To see all tasks for a specific episode, go to **Podcasts**, click the show, then click the episode.
+
+---
+
+## The invoice steps
+
+Every episode has three invoice-related tasks at the end of the workflow:
+
+- **EP Confirms Invoice Amount** — Steve, this one's yours. Add the amount in the notes field and mark it complete.
+- **Invoice Raised** — Accounts picks this up once Steve has confirmed.
+- **Payment Received** — Accounts marks this when the money lands.
+
+This means we always know exactly where we are with billing, without anyone having to chase.
+
+---
+
+## To-Dos
+
+Got something that needs doing but isn't tied to a specific episode? Stick it in **To-Do**.
+
+Hit **+ New To-Do**, give it a name, assign it to someone, set a due date, and optionally link it to a podcast. It'll show up in that person's **My Tasks** view alongside their episode work.
+
+---
+
+## The Gantt chart
+
+Head to **Gantt** for the timeline view. Each episode shows as a bar spanning from the first task due date to the launch date.
+
+- Click any episode row to expand it and see individual tasks
+- Gold dashed line = today
+- Gold diamond = launch date
+- Red = overdue
+- Use **+ Zoom / − Zoom** to adjust, and **Today** to re-centre
+
+Great for spotting clashes, planning ahead, and working out who's got too much on.
+
+---
+
+## A few things to know
+
+**Changes save automatically.** The "● Live" indicator in the bottom left of the sidebar means you're connected and everything's syncing in real time. If it says "↻ Saving…" just give it a second.
+
+**Everyone sees the same data.** When you update a task, everyone else sees it immediately. No emailing files around.
+
+**Episode titles are editable.** Go into a podcast, find the episode, and click the title to rename it from S01E01 to something more descriptive. Hit Enter to save.
+
+---
+
+## Something's wrong / missing?
+
+Drop Emma a message. She's the one who built this and she can fix it.
+
+---
+
+*Built for Bengo Media. Powered by good vibes and Supabase.*
