@@ -36,8 +36,6 @@ Keep these somewhere safe (not in this file once it's in GitHub).
 5. Commit the change
 6. Wait 1-2 minutes — the live URL updates automatically
 
-That's the whole deployment process.
-
 > **Note for future Claude sessions:** Always update `README.md` and `TEAM-GUIDE.md` at the end of each build session.
 
 ---
@@ -153,7 +151,10 @@ To add, remove or rename a task from the template, you need to update the code. 
 | Dashboard | ⬡ Dashboard | Open tasks, overdue count, overall % complete with progress ring |
 | Podcast progress | ⬡ Dashboard | Per-podcast progress bar, episodes done, task % complete |
 | Podcast cards | 🎙 Podcasts | Progress bar and % on each card, colour coded |
-| Podcast management | 🎙 Podcasts | Create with auto-generated episodes + tasks |
+| Create podcast | 🎙 Podcasts → + New Podcast | Auto-generates all episodes and tasks from launch date |
+| Edit podcast | 🎙 Podcasts → ✏️ | Edit name, team, type, frequency. Doesn't affect existing episodes |
+| Batch add episodes | 🎙 Podcasts → ➕ | Add multiple episodes continuing from last episode's date |
+| Reschedule episode | Podcasts → Episodes → 📅 | Shifts all task due dates automatically |
 | Episode tasks | Podcasts → Episode | Task list per episode, click status to cycle |
 | All Tasks — Table | ✅ All Tasks | Filterable by status, podcast, role |
 | All Tasks — Kanban | ✅ All Tasks → ⊞ Kanban | Toggle in top right of filters bar |
@@ -201,6 +202,7 @@ The progress bars and rings use the same colour logic throughout:
 - **Email notifications** — alert people when tasks are assigned or overdue. Already discussed, ready to build when you want it.
 - **Data import** — bulk upload existing podcasts/todos from a spreadsheet rather than entering one by one.
 - **File attachments** — PDFs, audio, artwork attached to episodes. Supabase Storage handles this.
+- **Patreon release date** — a second date field on episodes for early Patreon drops. Easy to add when needed.
 - **Proper login/auth** — right now anyone with the URL can read and write. Fine internally, worth locking down if the URL ever gets shared outside the team.
 - **Supabase Pro** — $25/month gets you backups, more storage and better performance. Not needed yet.
 - **Mobile optimisation** — the app works on mobile but isn't designed for it. Fixable if the team want it.
