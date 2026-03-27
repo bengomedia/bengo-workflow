@@ -1392,43 +1392,36 @@ function previewImportCSV(){
 async function saveImportTodos(){
   if(!importRows.length) return;
   const btn = document.getElementById('saveImportBtn');
-  btn.disabled=true; btn.textContent=`Importing ${importRows.length}…`; setSync('syncing');
+  btn.disabled=true; btn.textContent='Importing ' + importRows.length + '…'; setSync('syncing');
   let count=0;
   try{
-    for(const r of importRows){
-      const assignedName = (r.assigned_to||'').trim().toLowerCase();
-      const podName = (r.podcast||'').trim().toLowerCase();
-      const epName = (r.episode||'').trim().toLowerCase();
-      const matchedPerson = assignedName ? db.people.find(p=>p.name.toLowerCase()===assignedName) : null;
-      const matchedPod = podName ? db.podcasts.find(p=>p.name.toLowerCase()===podName) : null;
-      const matchedEp = (matchedPod && epName) ? db.episodes.find(ep=>ep.podcast_id===matchedPod.id&&((ep.default_title||'').toLowerCase()===epName||(ep.title||'').toLowerCase()===epName)) : null;
-      const addToAll = (r.add_to_all_episodes||'').trim().toLowerCase()==='yes';
-
+    for(let ri=0; ri<importRows.length; ri++){
+      const r = importRows[ri];
+      const resolved = resolveImportRow(r);
       const base = {
         name: r.name,
-        assigned_to: matchedPerson ? matchedPerson.id : null,
+        assigned_to: resolved.matchedPerson ? resolved.matchedPerson.id : null,
         due_date: parseImportDate(r.due_date) || null,
-        podcast_id: matchedPod ? matchedPod.id : null,
+        podcast_id: resolved.matchedPodcast ? resolved.matchedPodcast.id : null,
         status: 'To Do',
         notes: ''
       };
-
-      if(addToAll && matchedPod){
-        const podEps = db.episodes.filter(ep=>ep.podcast_id===matchedPod.id);
-        for(const podEp of podEps){
-          const todo = {...base, id:uid(), episode_id:podEp.id};
+      if(resolved.addToAll && resolved.matchedPodcast){
+        const podEps = db.episodes.filter(function(ep){return ep.podcast_id===resolved.matchedPodcast.id;});
+        for(let ei=0; ei<podEps.length; ei++){
+          const todo = Object.assign({}, base, {id:uid(), episode_id:podEps[ei].id});
           await api.post('todos', todo);
           db.todos.push(todo);
           count++;
         }
       } else {
-        const todo = {...base, id:uid(), episode_id: matchedEp ? matchedEp.id : null};
+        const todo = Object.assign({}, base, {id:uid(), episode_id: resolved.matchedEpisode ? resolved.matchedEpisode.id : null});
         await api.post('todos', todo);
         db.todos.push(todo);
         count++;
       }
     }
-    setSync('live');closeModal();renderTodos();notify(`${count} to-do${count!==1?'s':''} imported!`);
+    setSync('live');closeModal();renderTodos();notify(count + ' to-do' + (count!==1?'s':'') + ' imported!');
   }catch(err){
     setSync('error');notify('Error: '+err.message,true);
   }finally{
