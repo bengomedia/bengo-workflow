@@ -1351,10 +1351,13 @@ function previewImportCSV(){
 
     // Resolve names to IDs for preview
     const resolved = importRows.map(r=>{
-      const person = db.people.find(p=>p.name.toLowerCase()===r.assigned_to?.toLowerCase());
-      const pod = db.podcasts.find(p=>p.name.toLowerCase()===r.podcast?.toLowerCase());
-      const ep = pod ? db.episodes.find(e=>e.podcast_id===pod.id&&(e.default_title?.toLowerCase()===r.episode?.toLowerCase()||e.title?.toLowerCase()===r.episode?.toLowerCase())) : null;
-      const allEps = r.add_to_all_episodes?.toLowerCase()==='yes';
+      const person = r.assigned_to ? db.people.find(p=>p.name.toLowerCase()===r.assigned_to.toLowerCase()) : null;
+      const pod = r.podcast ? db.podcasts.find(p=>p.name.toLowerCase()===r.podcast.toLowerCase()) : null;
+      const ep = (pod && r.episode) ? db.episodes.find(e=>e.podcast_id===pod.id&&(
+        (e.default_title||'').toLowerCase()===r.episode.toLowerCase()||
+        (e.title||'').toLowerCase()===r.episode.toLowerCase()
+      )) : null;
+      const allEps = (r.add_to_all_episodes||'').toLowerCase()==='yes';
       const epCount = allEps && pod ? db.episodes.filter(e=>e.podcast_id===pod.id).length : null;
       return{
         name:r.name,
