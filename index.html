@@ -1308,6 +1308,27 @@ function parseImportDate(val){
   return null;
 }
 
+function resolveImportRow(r){
+  var assignedTo = (r.assigned_to||'').trim().toLowerCase();
+  var podcastName = (r.podcast||'').trim().toLowerCase();
+  var episodeName = (r.episode||'').trim().toLowerCase();
+  var matchedPerson = assignedTo ? db.people.find(function(p){return p.name.toLowerCase()===assignedTo;}) : null;
+  var matchedPodcast = podcastName ? db.podcasts.find(function(p){return p.name.toLowerCase()===podcastName;}) : null;
+  var matchedEpisode = (matchedPodcast && episodeName) ? db.episodes.find(function(ep){
+    return ep.podcast_id===matchedPodcast.id && (
+      (ep.default_title||'').toLowerCase()===episodeName ||
+      (ep.title||'').toLowerCase()===episodeName
+    );
+  }) : null;
+  var addToAll = (r.add_to_all_episodes||'').trim().toLowerCase()==='yes';
+  var podEpCount = (addToAll && matchedPodcast) ? db.episodes.filter(function(ep){return ep.podcast_id===matchedPodcast.id;}).length : 0;
+  var target = '—';
+  if(addToAll && matchedPodcast) target = 'All ' + podEpCount + ' eps in ' + matchedPodcast.name;
+  else if(matchedEpisode && matchedPodcast) target = matchedPodcast.name + ' · ' + (matchedEpisode.default_title||matchedEpisode.title||'');
+  else if(matchedPodcast) target = matchedPodcast.name;
+  return { matchedPerson:matchedPerson, matchedPodcast:matchedPodcast, matchedEpisode:matchedEpisode, addToAll:addToAll, target:target };
+}
+
 function openImportTodosModal(){
   importRows = [];
   document.getElementById('importPreview').innerHTML = '';
@@ -1392,6 +1413,7 @@ function previewImportCSV(){
 
 async function saveImportTodos(){
   if(!importRows.length) return;
+  if(!confirm('Import ' + importRows.length + ' tasks? This cannot be undone.')) return;
   const btn = document.getElementById('saveImportBtn');
   btn.disabled=true; btn.textContent='Importing ' + importRows.length + '…'; setSync('syncing');
   let count=0;
