@@ -595,7 +595,7 @@ function renderPodcasts(){
   const el=document.getElementById('view-podcasts');
   if(!db.podcasts.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🎙</div><div class="empty-title">No podcasts yet</div><div class="empty-sub">Create your first podcast to get started.</div><button class="btn" onclick="openNewPodcastModal()">+ New Podcast</button></div>`;return;}
   el.innerHTML=`<div class="card-grid">${db.podcasts.map(p=>{
-    const ec=db.episodes.filter(e=>e.podcast_id===p.id).length,prod=pById(p.producer),ep=pById(p.ep);
+    const ec=db.episodes.filter(e=>e.podcast_id===p.id).length,prod=pById(p.producer),epPerson=pById(p.ep);
     const taskPct=podcastProgress(p.id),epInfo=podcastEpisodeProgress(p.id);
     const pct=taskPct===null?0:taskPct;
     const color=pct===100?'var(--complete-text)':pct>50?'var(--accent)':'var(--accent2)';
@@ -606,7 +606,7 @@ function renderPodcasts(){
       <div class="card-meta">
         <span class="card-badge badge-${(p.type||'interview').toLowerCase()}">${p.type}</span><br>
         ${ec} episode${ec!==1?'s':''} · Season ${p.season} · ${p.frequency}<br>
-        EP: ${ep?ep.name:'—'} · Producer: ${prod?prod.name:'—'}
+        EP: ${epPerson?epPerson.name:'—'} · Producer: ${prod?prod.name:'—'}
       </div>
       <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
