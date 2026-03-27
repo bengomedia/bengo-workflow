@@ -314,6 +314,7 @@
       <div class="form-group"><label>Link to Podcast (optional)</label><select id="f-todoPodcast"><option value="">— None —</option></select></div>
       <div class="form-group"><label>Status</label><select id="f-todoStatus"><option>To Do</option><option>In Progress</option><option>Waiting / Blocked</option><option>Complete</option></select></div>
     </div>
+    <div class="form-group"><label>Link to Episode (optional)</label><select id="f-todoEpisode"><option value="">— None —</option></select></div>
     <div class="form-group"><label>Notes</label><textarea id="f-todoNotes" rows="2" placeholder="Any extra detail..."></textarea></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" id="saveTodoBtn" onclick="saveTodo()">Save</button></div>
   </div>
@@ -333,6 +334,41 @@
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
       <button class="btn" id="saveRescheduleBtn" onclick="saveReschedule()">Reschedule + Shift Tasks</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="modalAdhocTask">
+    <div class="modal-title">Add Ad Hoc Task</div>
+    <div class="form-group"><label>Task Name</label><input type="text" id="f-adhocName" placeholder="What needs doing?"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Assigned To</label><select id="f-adhocAssigned"></select></div>
+      <div class="form-group"><label>Due Date</label><input type="date" id="f-adhocDue"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Role</label><select id="f-adhocRole"><option>Producer</option><option>Editor</option><option>Executive Producer</option><option>Accounts</option><option>Admin</option></select></div>
+      <div class="form-group"><label>Add to</label><select id="f-adhocScope"><option value="this">This episode only</option><option value="all">All remaining incomplete episodes</option></select></div>
+    </div>
+    <div class="form-group"><label>Notes</label><textarea id="f-adhocNotes" rows="2" placeholder="Any extra detail..."></textarea></div>
+    <div id="adhocPreview" style="font-size:12px;color:var(--accent);margin-top:4px;min-height:18px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" id="saveAdhocBtn" onclick="saveAdhocTask()">Add Task</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="modalImportTodos">
+    <div class="modal-title">Import To-Dos</div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Paste a list — one task per line. They'll all be assigned to the same person with the same due date.</p>
+    <div class="form-group"><label>Tasks (one per line)</label><textarea id="f-importList" rows="8" placeholder="Chase Adam re episode 3 edit&#10;Send invoice to Acme&#10;Book studio for next month&#10;..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Assign all to</label><select id="f-importAssigned"></select></div>
+      <div class="form-group"><label>Due Date (optional)</label><input type="date" id="f-importDue"></div>
+    </div>
+    <div class="form-group"><label>Link to Podcast (optional)</label><select id="f-importPodcast"><option value="">— None —</option></select></div>
+    <div id="importPreview" style="font-size:12px;color:var(--text-muted);margin-top:4px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" id="saveImportBtn" onclick="saveImportTodos()">Import</button>
     </div>
   </div>
 
@@ -477,11 +513,11 @@ function navigate(view,id){
   if(view==='podcasts'){document.getElementById('topbarActions').innerHTML='<button class="btn" onclick="openNewPodcastModal()">+ New Podcast</button>';renderPodcasts();}
   else if(view==='dashboard')renderDashboard();
   else if(view==='episodes'){if(id)currentPodcastId=id;renderEpisodes();}
-  else if(view==='episode-tasks'){if(id)currentEpisodeId=id;renderEpisodeTasks();}
+  else if(view==='episode-tasks'){if(id)currentEpisodeId=id;renderEpisodeTasks();document.getElementById('topbarActions').innerHTML='<button class="btn" onclick="openAdhocTaskModal()">+ Ad Hoc Task</button>';}
   else if(view==='tasks'){populateTaskFilters();renderAllTasks();}
   else if(view==='mytasks')renderMyTasks();
   else if(view==='gantt'){populateGanttFilter();renderGantt();}
-  else if(view==='todos'){document.getElementById('topbarActions').innerHTML='<button class="btn" onclick="openNewTodoModal()">+ New To-Do</button>';populateTodoFilters();renderTodos();}
+  else if(view==='todos'){document.getElementById('topbarActions').innerHTML='<button class="btn btn-ghost" onclick="openImportTodosModal()" style="margin-right:8px">↑ Import</button><button class="btn" onclick="openNewTodoModal()">+ New To-Do</button>';populateTodoFilters();renderTodos();}
   else if(view==='people'){document.getElementById('topbarActions').innerHTML='<button class="btn" onclick="openNewPersonModal()">+ Add Person</button>';renderPeople();}
 }
 
@@ -716,13 +752,18 @@ function renderKanban(){
     const cards=colTasks.length?colTasks.map(t=>{
       const ep=epById(t.episode_id),pod=ep?podById(ep.podcast_id):null,person=t.assigned_to?pById(t.assigned_to):null;
       const od=t.due_date&&new Date(t.due_date)<today&&t.status!=='Complete';
-      return`<div class="kanban-card" onclick="qCycle('${t.id}');setTimeout(renderKanban,300)">
+      const nextStatuses={'To Do':'In Progress','In Progress':'Waiting / Blocked','Waiting / Blocked':'Complete','Complete':'To Do'};
+      const nextLabel={'To Do':'▶ Start','In Progress':'⏸ Block','Waiting / Blocked':'✓ Complete','Complete':'↺ Reopen'};
+      return`<div class="kanban-card" onclick="navigate('episode-tasks','${t.episode_id}')">
         <div class="kanban-card-title">${t.name}</div>
         <div class="kanban-card-meta">
           ${ep?`<span class="kanban-card-ep">${ep.default_title||'E'+ep.number}${ep.title?' · '+ep.title:''}</span>`:''}
           ${pod?`<span>${pod.name}</span>`:''}
           ${person?`<span>${person.name}</span>`:''}
           ${t.due_date?`<span class="${od?'kanban-card-overdue':''}">${od?'⚠ ':''}${formatDate(t.due_date)}</span>`:''}
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+          <button class="status-pill ${scls(t.status)}" style="font-size:10px;padding:2px 8px" onclick="event.stopPropagation();qCycle('${t.id}')">${nextLabel[t.status]||'▶'}</button>
         </div>
       </div>`;
     }).join(''):`<div class="kanban-empty">Nothing here</div>`;
@@ -1058,7 +1099,7 @@ function renderTodos(){
     return`<tr>
       <td>${t.name}</td>
       <td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">—</span>'}</td>
-      <td>${pod?`<span class="tag">${pod.name}</span>`:'<span style="color:var(--text-muted)">—</span>'}</td>
+      <td>${ep?`<span class="tag">${pod?pod.name+' · ':''}</span><span class="ep-num" style="font-size:11px">${ep.default_title||'E'+ep.number}</span>`:pod?`<span class="tag">${pod.name}</span>`:'<span style="color:var(--text-muted)">—</span>'}</td>
       <td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td>
       <td><button class="status-pill ${scls(t.status)}" onclick="cycleTodo('${t.id}')">${t.status}</button></td>
       <td>
@@ -1097,6 +1138,7 @@ function openNewTodoModal(){
   document.getElementById('f-todoStatus').value='To Do';
   document.getElementById('f-todoAssigned').innerHTML='<option value="">— Unassigned —</option>'+db.people.map(p=>`<option value="${p.id}">${p.name} (${p.role})</option>`).join('');
   document.getElementById('f-todoPodcast').innerHTML='<option value="">— None —</option>'+db.podcasts.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  document.getElementById('f-todoEpisode').innerHTML='<option value="">— None —</option>';
   openModal('modalTodo');
 }
 
@@ -1110,6 +1152,12 @@ function openEditTodoModal(id){
   document.getElementById('f-todoStatus').value=t.status;
   document.getElementById('f-todoAssigned').innerHTML='<option value="">— Unassigned —</option>'+db.people.map(p=>`<option value="${p.id}" ${t.assigned_to===p.id?'selected':''}>${p.name} (${p.role})</option>`).join('');
   document.getElementById('f-todoPodcast').innerHTML='<option value="">— None —</option>'+db.podcasts.map(p=>`<option value="${p.id}" ${t.podcast_id===p.id?'selected':''}>${p.name}</option>`).join('');
+  if(t.podcast_id){
+    const eps=db.episodes.filter(e=>e.podcast_id===t.podcast_id).sort((a,b)=>a.number-b.number);
+    document.getElementById('f-todoEpisode').innerHTML='<option value="">— None —</option>'+eps.map(e=>`<option value="${e.id}" ${t.episode_id===e.id?'selected':''}>${e.default_title||'E'+e.number}${e.title?' · '+e.title:''}</option>`).join('');
+  } else {
+    document.getElementById('f-todoEpisode').innerHTML='<option value="">— None —</option>';
+  }
   openModal('modalTodo');
 }
 
@@ -1123,6 +1171,7 @@ async function saveTodo(){
       assigned_to:document.getElementById('f-todoAssigned').value||null,
       due_date:document.getElementById('f-todoDue').value||null,
       podcast_id:document.getElementById('f-todoPodcast').value||null,
+      episode_id:document.getElementById('f-todoEpisode').value||null,
       status:document.getElementById('f-todoStatus').value,
       notes:document.getElementById('f-todoNotes').value.trim()
     };
@@ -1142,6 +1191,126 @@ async function saveTodo(){
 }
 
 
+
+
+// ============================================================
+// ADHOC TASKS
+// ============================================================
+function openAdhocTaskModal(){
+  document.getElementById('f-adhocName').value='';
+  document.getElementById('f-adhocDue').value='';
+  document.getElementById('f-adhocNotes').value='';
+  document.getElementById('f-adhocScope').value='this';
+  document.getElementById('f-adhocAssigned').innerHTML='<option value="">— Unassigned —</option>'+db.people.map(p=>`<option value="${p.id}">${p.name} (${p.role})</option>`).join('');
+  updateAdhocPreview();
+  document.getElementById('f-adhocScope').onchange = updateAdhocPreview;
+  openModal('modalAdhocTask');
+}
+
+function updateAdhocPreview(){
+  const scope = document.getElementById('f-adhocScope').value;
+  if(scope==='all'){
+    const pod = podById(currentPodcastId);
+    const remaining = db.episodes.filter(e=>e.podcast_id===currentPodcastId&&epStatus(e.id)!=='Complete');
+    document.getElementById('adhocPreview').textContent = `Will add to ${remaining.length} remaining incomplete episode${remaining.length!==1?'s':''}.`;
+  } else {
+    document.getElementById('adhocPreview').textContent = '';
+  }
+}
+
+async function saveAdhocTask(){
+  const name = document.getElementById('f-adhocName').value.trim();
+  if(!name){ alert('Task name required'); return; }
+  const btn = document.getElementById('saveAdhocBtn');
+  btn.disabled=true; btn.textContent='Adding…'; setSync('syncing');
+
+  try{
+    const scope = document.getElementById('f-adhocScope').value;
+    const assignedTo = document.getElementById('f-adhocAssigned').value||null;
+    const dueDate = document.getElementById('f-adhocDue').value||null;
+    const role = document.getElementById('f-adhocRole').value;
+    const notes = document.getElementById('f-adhocNotes').value.trim();
+
+    // Figure out which episodes to add to
+    let targetEpisodes = [];
+    if(scope==='this'){
+      targetEpisodes = [epById(currentEpisodeId)].filter(Boolean);
+    } else {
+      targetEpisodes = db.episodes.filter(e=>e.podcast_id===currentPodcastId&&epStatus(e.id)!=='Complete');
+    }
+
+    // Get max task order for each episode and add after it
+    for(const ep of targetEpisodes){
+      const existing = epTasks(ep.id);
+      const maxOrder = existing.length ? Math.max(...existing.map(t=>t.task_order)) : 100;
+      const task = {
+        id:uid(), episode_id:ep.id, name, role, assigned_to:assignedTo,
+        status:'To Do', due_date:dueDate, start_date:null,
+        task_order:maxOrder+10, notes
+      };
+      await api.post('tasks',task);
+      db.tasks.push(task);
+    }
+
+    setSync('live');
+    closeModal();
+    renderEpisodeTasks();
+    notify(`Task added to ${targetEpisodes.length} episode${targetEpisodes.length!==1?'s':''}!`);
+  }catch(e){
+    setSync('error');notify('Error: '+e.message,true);
+  }finally{
+    btn.disabled=false;btn.textContent='Add Task';
+  }
+}
+
+// ============================================================
+// IMPORT TODOS
+// ============================================================
+function openImportTodosModal(){
+  document.getElementById('f-importList').value='';
+  document.getElementById('f-importDue').value='';
+  document.getElementById('f-importAssigned').innerHTML='<option value="">— Unassigned —</option>'+db.people.map(p=>`<option value="${p.id}">${p.name} (${p.role})</option>`).join('');
+  document.getElementById('f-importPodcast').innerHTML='<option value="">— None —</option>'+db.podcasts.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  document.getElementById('importPreview').textContent='';
+  document.getElementById('f-importList').oninput = function(){
+    const lines = this.value.split('\n').map(l=>l.trim()).filter(Boolean);
+    document.getElementById('importPreview').textContent = lines.length ? `${lines.length} task${lines.length!==1?'s':''} ready to import.` : '';
+  };
+  openModal('modalImportTodos');
+}
+
+async function saveImportTodos(){
+  const lines = document.getElementById('f-importList').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  if(!lines.length){ alert('Paste at least one task'); return; }
+  const btn = document.getElementById('saveImportBtn');
+  btn.disabled=true; btn.textContent=`Importing ${lines.length}…`; setSync('syncing');
+  try{
+    const assignedTo = document.getElementById('f-importAssigned').value||null;
+    const dueDate = document.getElementById('f-importDue').value||null;
+    const podcastId = document.getElementById('f-importPodcast').value||null;
+    for(const name of lines){
+      const todo = {id:uid(),name,assigned_to:assignedTo,podcast_id:podcastId,episode_id:null,due_date:dueDate,status:'To Do',notes:''};
+      await api.post('todos',todo);
+      db.todos.push(todo);
+    }
+    setSync('live');closeModal();renderTodos();notify(`${lines.length} to-do${lines.length!==1?'s':''} imported!`);
+  }catch(e){
+    setSync('error');notify('Error: '+e.message,true);
+  }finally{
+    btn.disabled=false;btn.textContent='Import';
+  }
+}
+
+// ============================================================
+// TODO EPISODE LINKING
+// ============================================================
+function populateTodoEpisodes(){
+  const podId = document.getElementById('f-todoPodcast').value;
+  const epSel = document.getElementById('f-todoEpisode');
+  if(!podId){ epSel.innerHTML='<option value="">— None —</option>'; return; }
+  const eps = db.episodes.filter(e=>e.podcast_id===podId).sort((a,b)=>a.number-b.number);
+  epSel.innerHTML='<option value="">— None —</option>'+eps.map(e=>`<option value="${e.id}">${e.default_title||'E'+e.number}${e.title?' · '+e.title:''}</option>`).join('');
+}
 
 // ============================================================
 // BATCH EPISODES
