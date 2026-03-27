@@ -1361,7 +1361,7 @@ function previewImportCSV(){
       const epCount = allEps && pod ? db.episodes.filter(e=>e.podcast_id===pod.id).length : null;
       return{
         name:r.name,
-        person:person?person.name:'<span style="color:var(--accent2)">'+r.assigned_to+' (not found)</span>',
+        person:person?person.name:(r.assigned_to?`<span style="color:var(--accent2)">${r.assigned_to} (not found)</span>`:'—'),
         due:r.due_date||'—',_due:parseImportDate(r.due_date),
         target: allEps&&pod ? `All ${epCount} eps in ${pod.name}` : ep ? `${pod.name} · ${ep.default_title||ep.title}` : pod ? pod.name : '—'
       };
@@ -1396,39 +1396,41 @@ async function saveImportTodos(){
   let count=0;
   try{
     for(const r of importRows){
-      const person = db.people.find(p=>p.name.toLowerCase()===r.assigned_to?.toLowerCase());
-      const pod = db.podcasts.find(p=>p.name.toLowerCase()===r.podcast?.toLowerCase());
-      const ep = pod ? db.episodes.find(e=>e.podcast_id===pod.id&&(e.default_title?.toLowerCase()===r.episode?.toLowerCase()||e.title?.toLowerCase()===r.episode?.toLowerCase())) : null;
-      const allEps = r.add_to_all_episodes?.toLowerCase()==='yes';
+      const assignedName = (r.assigned_to||'').trim().toLowerCase();
+      const podName = (r.podcast||'').trim().toLowerCase();
+      const epName = (r.episode||'').trim().toLowerCase();
+      const matchedPerson = assignedName ? db.people.find(p=>p.name.toLowerCase()===assignedName) : null;
+      const matchedPod = podName ? db.podcasts.find(p=>p.name.toLowerCase()===podName) : null;
+      const matchedEp = (matchedPod && epName) ? db.episodes.find(ep=>ep.podcast_id===matchedPod.id&&((ep.default_title||'').toLowerCase()===epName||(ep.title||'').toLowerCase()===epName)) : null;
+      const addToAll = (r.add_to_all_episodes||'').trim().toLowerCase()==='yes';
 
       const base = {
-        name:r.name,
-        assigned_to:person?.id||null,
-        due_date:parseImportDate(r.due_date)||null,
-        podcast_id:pod?.id||null,
-        status:'To Do',
-        notes:''
+        name: r.name,
+        assigned_to: matchedPerson ? matchedPerson.id : null,
+        due_date: parseImportDate(r.due_date) || null,
+        podcast_id: matchedPod ? matchedPod.id : null,
+        status: 'To Do',
+        notes: ''
       };
 
-      if(allEps && pod){
-        // Add to all episodes in that podcast
-        const eps = db.episodes.filter(e=>e.podcast_id===pod.id);
-        for(const episode of eps){
-          const todo={...base,id:uid(),episode_id:episode.id};
-          await api.post('todos',todo);
+      if(addToAll && matchedPod){
+        const podEps = db.episodes.filter(ep=>ep.podcast_id===matchedPod.id);
+        for(const podEp of podEps){
+          const todo = {...base, id:uid(), episode_id:podEp.id};
+          await api.post('todos', todo);
           db.todos.push(todo);
           count++;
         }
       } else {
-        const todo={...base,id:uid(),episode_id:ep?.id||null};
-        await api.post('todos',todo);
+        const todo = {...base, id:uid(), episode_id: matchedEp ? matchedEp.id : null};
+        await api.post('todos', todo);
         db.todos.push(todo);
         count++;
       }
     }
     setSync('live');closeModal();renderTodos();notify(`${count} to-do${count!==1?'s':''} imported!`);
-  }catch(e){
-    setSync('error');notify('Error: '+e.message,true);
+  }catch(err){
+    setSync('error');notify('Error: '+err.message,true);
   }finally{
     btn.disabled=false;btn.textContent='Import';
   }
