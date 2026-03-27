@@ -379,6 +379,12 @@
     <div class="form-row"><div class="form-group"><label>Assigned To</label><select id="f-taskAssigned"></select></div><div class="form-group"><label>Status</label><select id="f-taskStatus"><option>To Do</option><option>In Progress</option><option>Waiting / Blocked</option><option>Complete</option></select></div></div>
     <div class="form-row"><div class="form-group"><label>Due Date</label><input type="date" id="f-taskDue"></div><div class="form-group"><label>Start Date</label><input type="date" id="f-taskStart"></div></div>
     <div class="form-group"><label>Notes</label><textarea id="f-taskNotes" rows="3"></textarea></div>
+    <div id="taskCascadeOption" class="form-group" style="display:none">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13px;cursor:pointer">
+        <input type="checkbox" id="f-taskCascade" style="width:auto;accent-color:var(--accent)">
+        Also reassign all other incomplete <span id="taskCascadeRoleLabel"></span> tasks in this episode
+      </label>
+    </div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" id="saveTaskBtn" onclick="saveTask()">Save Task</button></div>
   </div>
 </div>
@@ -999,10 +1005,39 @@ async function savePodcast(){
   if(editingPodcastId){
     const btn=document.getElementById('savePodcastBtn');btn.disabled=true;btn.textContent='Saving…';setSync('syncing');
     try{
+      const oldPod = podById(editingPodcastId);
       const data={name,type:document.getElementById('f-podType').value,company:document.getElementById('f-podCompany').value.trim(),contact:document.getElementById('f-podContact').value.trim(),ep:document.getElementById('f-podEP').value||null,producer:document.getElementById('f-podProducer').value||null,editor:document.getElementById('f-podEditor').value||null,accounts:document.getElementById('f-podAccounts').value||null,season:document.getElementById('f-podSeason').value,episode_count:parseInt(document.getElementById('f-podEpCount').value)||6,frequency:document.getElementById('f-podFreq').value};
+
+      // Detect which roles changed
+      const roleMap = {'Executive Producer':'ep','Producer':'producer','Editor':'editor','Accounts':'accounts'};
+      const changedRoles = {};
+      Object.entries(roleMap).forEach(([roleName, field]) => {
+        if(oldPod[field] !== data[field]) changedRoles[roleName] = data[field];
+      });
+
       await api.patch('podcasts',editingPodcastId,data);
-      Object.assign(podById(editingPodcastId),data);
-      setSync('live');closeModal();renderPodcasts();notify('Podcast updated!');
+      Object.assign(oldPod, data);
+
+      // Cascade to incomplete episodes and their incomplete tasks
+      if(Object.keys(changedRoles).length > 0){
+        const incompleteEps = db.episodes.filter(ep => ep.podcast_id===editingPodcastId && epStatus(ep.id)!=='Complete');
+        let taskCount = 0;
+        for(const ep of incompleteEps){
+          const incompleteTasks = db.tasks.filter(t => t.episode_id===ep.id && t.status!=='Complete');
+          for(const t of incompleteTasks){
+            if(changedRoles[t.role] !== undefined){
+              const newAssignee = changedRoles[t.role];
+              await api.patch('tasks', t.id, {assigned_to: newAssignee});
+              t.assigned_to = newAssignee;
+              taskCount++;
+            }
+          }
+        }
+        setSync('live');closeModal();renderPodcasts();
+        notify('Podcast updated — ' + taskCount + ' task' + (taskCount!==1?'s':'') + ' reassigned across ' + incompleteEps.length + ' episode' + (incompleteEps.length!==1?'s':''));
+      } else {
+        setSync('live');closeModal();renderPodcasts();notify('Podcast updated!');
+      }
     }catch(e){setSync('error');notify('Error: '+e.message,true);}
     finally{btn.disabled=false;btn.textContent='Save Changes';}
     return;
@@ -1075,6 +1110,10 @@ function openEditTaskModal(id){
   editingTaskId=id;const t=db.tasks.find(t=>t.id===id);if(!t)return;
   document.getElementById('f-taskName').value=t.name;document.getElementById('f-taskStatus').value=t.status;document.getElementById('f-taskDue').value=t.due_date||'';document.getElementById('f-taskStart').value=t.start_date||'';document.getElementById('f-taskNotes').value=t.notes||'';
   document.getElementById('f-taskAssigned').innerHTML='<option value="">— Unassigned —</option>'+db.people.map(p=>`<option value="${p.id}" ${t.assigned_to===p.id?'selected':''}>${p.name} (${p.role})</option>`).join('');
+  // Show cascade option
+  document.getElementById('f-taskCascade').checked=false;
+  document.getElementById('taskCascadeRoleLabel').textContent=t.role;
+  document.getElementById('taskCascadeOption').style.display='block';
   openModal('modalTask');
 }
 
@@ -1084,7 +1123,26 @@ async function saveTask(){
   try{
     const data={assigned_to:document.getElementById('f-taskAssigned').value||null,status:document.getElementById('f-taskStatus').value,due_date:document.getElementById('f-taskDue').value||null,start_date:document.getElementById('f-taskStart').value||null,notes:document.getElementById('f-taskNotes').value.trim()};
     await api.patch('tasks',editingTaskId,data);Object.assign(t,data);
-    setSync('live');closeModal();renderEpisodeTasks();notify('Task saved');
+
+    // Cascade to other incomplete tasks of same role in this episode
+    const cascade = document.getElementById('f-taskCascade').checked;
+    let cascadeCount = 0;
+    if(cascade && data.assigned_to !== undefined){
+      const siblingTasks = db.tasks.filter(st =>
+        st.episode_id===t.episode_id &&
+        st.id!==editingTaskId &&
+        st.role===t.role &&
+        st.status!=='Complete'
+      );
+      for(const st of siblingTasks){
+        await api.patch('tasks', st.id, {assigned_to: data.assigned_to});
+        st.assigned_to = data.assigned_to;
+        cascadeCount++;
+      }
+    }
+
+    setSync('live');closeModal();renderEpisodeTasks();
+    notify(cascadeCount > 0 ? 'Task saved — ' + cascadeCount + ' other task' + (cascadeCount!==1?'s':'') + ' also reassigned' : 'Task saved');
   }catch(e){setSync('error');notify('Error: '+e.message,true);}
   finally{btn.disabled=false;}
 }
