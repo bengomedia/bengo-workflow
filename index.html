@@ -9,8 +9,8 @@
   :root {
     --bg:#0f0e0c;--surface:#1a1916;--surface2:#242220;--border:#2e2c28;
     --accent:#e8c547;--accent2:#e87d47;--text:#f0ece4;--text-muted:#7a7568;--text-dim:#4a4740;
-    --todo:#4a4740;--inprogress:#1a4a7a;--waiting:#4a2a00;--complete:#1a4a2a;
-    --todo-text:#9a9388;--inprogress-text:#60aaee;--waiting-text:#ee9940;--complete-text:#50cc80;
+    --todo:#4a4740;--inprogress:#1a4a7a;--inreview:#2a1a5a;--waiting:#4a2a00;--complete:#1a4a2a;
+    --todo-text:#9a9388;--inprogress-text:#60aaee;--inreview-text:#b090ff;--waiting-text:#ee9940;--complete-text:#50cc80;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Varela Round',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
@@ -67,7 +67,7 @@
   .status-pill.todo{background:var(--todo);color:var(--todo-text);}
   .status-pill.inprogress{background:var(--inprogress);color:var(--inprogress-text);}
   .status-pill.waiting{background:var(--waiting);color:var(--waiting-text);}
-  .status-pill.complete{background:var(--complete);color:var(--complete-text);}
+  .status-pill.complete{background:var(--complete);color:var(--complete-text);}.status-pill.inreview{background:var(--inreview);color:var(--inreview-text);}
   .progress-bar{height:4px;background:var(--surface2);border-radius:2px;width:80px;}
   .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s;}
   .task-filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
@@ -133,13 +133,13 @@
   .view-toggle-btn{background:transparent;border:none;color:var(--text-muted);padding:6px 14px;cursor:pointer;font-family:'Varela Round',sans-serif;font-size:12px;transition:all .15s;}
   .view-toggle-btn.active{background:var(--accent);color:#1a1400;font-weight:600;}
   .view-toggle-btn:hover:not(.active){background:var(--surface2);color:var(--text);}
-  .kanban-board{display:grid;grid-template-columns:repeat(3,1fr) 48px;gap:14px;align-items:start;transition:grid-template-columns .3s;}.kanban-board.show-complete{grid-template-columns:repeat(4,1fr);}
+  .kanban-board{display:grid;grid-template-columns:repeat(4,1fr) 48px;gap:14px;align-items:start;transition:grid-template-columns .3s;}.kanban-board.show-complete{grid-template-columns:repeat(5,1fr);}
   .kanban-col{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
   .kanban-col-header{padding:12px 14px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
   .kanban-col-header.todo{color:var(--todo-text);background:rgba(74,71,64,.2);}
   .kanban-col-header.inprogress{color:var(--inprogress-text);background:rgba(26,74,122,.2);}
   .kanban-col-header.waiting{color:var(--waiting-text);background:rgba(74,42,0,.2);}
-  .kanban-col-header.complete{color:var(--complete-text);background:rgba(26,74,42,.2);}
+  .kanban-col-header.complete{color:var(--complete-text);background:rgba(26,74,42,.2);}.kanban-col-header.inreview{color:var(--inreview-text);background:rgba(42,26,90,.2);}
   .kanban-col-count{font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1px 7px;}
   .kanban-cards{padding:10px;display:flex;flex-direction:column;gap:8px;min-height:60px;}
   .kanban-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;transition:all .15s;}
@@ -213,7 +213,7 @@
 
       <div id="view-tasks" class="hidden">
         <div class="task-filters">
-          <select class="filter-select" id="filterStatus" onchange="renderAllTasks()"><option value="">All Statuses</option><option>To Do</option><option>In Progress</option><option>Waiting / Blocked</option><option>Complete</option></select>
+          <select class="filter-select" id="filterStatus" onchange="renderAllTasks()"><option value="">All Statuses</option><option>To Do</option><option>In Progress</option><option>In Review</option><option>Waiting / Blocked</option><option>Complete</option></select>
           <select class="filter-select" id="filterPodcast" onchange="renderAllTasks()"><option value="">All Podcasts</option></select>
           <select class="filter-select" id="filterRole" onchange="renderAllTasks()"><option value="">All Roles</option><option>Producer</option><option>Editor</option><option>Executive Producer</option><option>Accounts</option></select>
           <div class="view-toggle">
@@ -250,7 +250,7 @@
         <div class="task-filters" style="margin-bottom:20px">
           <select class="filter-select" id="todoFilterPerson" onchange="renderTodos()"><option value="">All People</option></select>
           <select class="filter-select" id="todoFilterPodcast" onchange="renderTodos()"><option value="">All Podcasts</option></select>
-          <select class="filter-select" id="todoFilterStatus" onchange="renderTodos()"><option value="">All Statuses</option><option>To Do</option><option>In Progress</option><option>Waiting / Blocked</option><option>Complete</option></select>
+          <select class="filter-select" id="todoFilterStatus" onchange="renderTodos()"><option value="">All Statuses</option><option>To Do</option><option>In Progress</option><option>In Review</option><option>Waiting / Blocked</option><option>Complete</option></select>
         </div>
         <table><thead><tr><th>Task</th><th>Assigned To</th><th>Podcast</th><th>Due Date</th><th>Status</th><th>Notes</th></tr></thead><tbody id="todosBody"></tbody></table>
       </div>
@@ -312,7 +312,7 @@
     </div>
     <div class="form-row">
       <div class="form-group"><label>Link to Podcast (optional)</label><select id="f-todoPodcast"><option value="">— None —</option></select></div>
-      <div class="form-group"><label>Status</label><select id="f-todoStatus"><option>To Do</option><option>In Progress</option><option>Waiting / Blocked</option><option>Complete</option></select></div>
+      <div class="form-group"><label>Status</label><select id="f-todoStatus"><option>To Do</option><option>In Progress</option><option>In Review</option><option>Waiting / Blocked</option><option>Complete</option></select></div>
     </div>
     <div class="form-group"><label>Link to Episode (optional)</label><select id="f-todoEpisode"><option value="">— None —</option></select></div>
     <div class="form-group"><label>Notes</label><textarea id="f-todoNotes" rows="2" placeholder="Any extra detail..."></textarea></div>
@@ -376,7 +376,7 @@
   <div class="modal hidden" id="modalTask">
     <div class="modal-title">Edit Task</div>
     <div class="form-group"><label>Task</label><input type="text" id="f-taskName" readonly style="opacity:.6"></div>
-    <div class="form-row"><div class="form-group"><label>Assigned To</label><select id="f-taskAssigned"></select></div><div class="form-group"><label>Status</label><select id="f-taskStatus"><option>To Do</option><option>In Progress</option><option>Waiting / Blocked</option><option>Complete</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label>Assigned To</label><select id="f-taskAssigned"></select></div><div class="form-group"><label>Status</label><select id="f-taskStatus"><option>To Do</option><option>In Progress</option><option>In Review</option><option>Waiting / Blocked</option><option>Complete</option></select></div></div>
     <div class="form-row"><div class="form-group"><label>Due Date</label><input type="date" id="f-taskDue"></div><div class="form-group"><label>Start Date</label><input type="date" id="f-taskStart"></div></div>
     <div class="form-group"><label>Notes</label><textarea id="f-taskNotes" rows="3"></textarea></div>
     <div id="taskCascadeOption" class="form-group" style="display:none">
@@ -489,7 +489,7 @@ function uid(){return Math.random().toString(36).slice(2,10)+Math.random().toStr
 function formatDate(d){if(!d)return'—';const dt=new Date(d);if(isNaN(dt))return'—';return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
 function addDays(s,n){const d=new Date(s);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);}
 function freqDays(f){return f==='Weekly'?7:f==='BiWeekly'?14:30;}
-function scls(s){return s==='In Progress'?'inprogress':s==='Waiting / Blocked'?'waiting':s==='Complete'?'complete':'todo';}
+function scls(s){return s==='In Progress'?'inprogress':s==='In Review'?'inreview':s==='Waiting / Blocked'?'waiting':s==='Complete'?'complete':'todo';}
 function pById(id){return db.people.find(p=>p.id===id);}
 function podById(id){return db.podcasts.find(p=>p.id===id);}
 function epById(id){return db.episodes.find(e=>e.id===id);}
@@ -497,7 +497,7 @@ function ini(n){if(!n)return'?';return n.split(' ').map(w=>w[0]).join('').slice(
 function roleP(podcastId,role){const p=podById(podcastId);if(!p)return null;if(role==='Executive Producer')return pById(p.ep);if(role==='Producer')return pById(p.producer);if(role==='Editor')return pById(p.editor);return null;}
 function epTasks(epId){return db.tasks.filter(t=>t.episode_id===epId).sort((a,b)=>a.task_order-b.task_order);}
 function epProg(epId){const t=epTasks(epId);if(!t.length)return 0;return Math.round(t.filter(t=>t.status==='Complete').length/t.length*100);}
-function epStatus(epId){const t=epTasks(epId);if(!t.length)return'To Do';if(t.every(t=>t.status==='Complete'))return'Complete';if(t.some(t=>t.status==='In Progress'||t.status==='Waiting / Blocked'))return'In Progress';return'To Do';}
+function epStatus(epId){const t=epTasks(epId);if(!t.length)return'To Do';if(t.every(t=>t.status==='Complete'))return'Complete';if(t.some(t=>t.status==='In Progress'||t.status==='In Review'||t.status==='Waiting / Blocked'))return'In Progress';return'To Do';}
 
 function setSync(s){const el=document.getElementById('syncIndicator');if(s==='syncing'){el.textContent='↻ Saving…';el.className='sync-indicator syncing';}else if(s==='error'){el.textContent='✕ Error';el.className='sync-indicator error';}else{el.textContent='● Live';el.className='sync-indicator';}}
 function notify(msg,err){const el=document.createElement('div');el.className='notify'+(err?' err':'');el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),3000);}
@@ -673,7 +673,7 @@ function renderEpisodeTasks(){
 
 async function cycleTask(id){
   const t=db.tasks.find(t=>t.id===id);if(!t)return;
-  const s=['To Do','In Progress','Waiting / Blocked','Complete'];
+  const s=['To Do','In Progress','In Review','Waiting / Blocked','Complete'];
   t.status=s[(s.indexOf(t.status)+1)%s.length];
   setSync('syncing');
   try{await api.patch('tasks',id,{status:t.status});setSync('live');renderEpisodeTasks();}
@@ -682,7 +682,7 @@ async function cycleTask(id){
 
 async function qCycle(id){
   const t=db.tasks.find(t=>t.id===id);if(!t)return;
-  const s=['To Do','In Progress','Waiting / Blocked','Complete'];
+  const s=['To Do','In Progress','In Review','Waiting / Blocked','Complete'];
   t.status=s[(s.indexOf(t.status)+1)%s.length];
   setSync('syncing');
   try{await api.patch('tasks',id,{status:t.status});setSync('live');if(currentView==='dashboard')renderDashboard();else if(currentView==='tasks')renderAllTasks();else if(currentView==='mytasks')renderMyTasks();}
@@ -751,6 +751,7 @@ function renderKanban(){
   const cols=[
     {key:'To Do',cls:'todo',label:'To Do'},
     {key:'In Progress',cls:'inprogress',label:'In Progress'},
+    {key:'In Review',cls:'inreview',label:'In Review'},
     {key:'Waiting / Blocked',cls:'waiting',label:'Waiting'},
     {key:'Complete',cls:'complete',label:'Complete'},
   ];
@@ -766,7 +767,7 @@ function renderKanban(){
         <div class="kanban-cards"></div>
       </div>`;
     }
-    const nextLabel={'To Do':'▶ Start','In Progress':'⏸ Block','Waiting / Blocked':'✓ Complete','Complete':'↺ Reopen'};
+    const nextLabel={'To Do':'▶ Start','In Progress':'👁 Review','In Review':'⏸ Block','Waiting / Blocked':'✓ Complete','Complete':'↺ Reopen'};
     const cards=colTasks.length?colTasks.map(t=>{
       const ep=epById(t.episode_id),pod=ep?podById(ep.podcast_id):null,person=t.assigned_to?pById(t.assigned_to):null;
       const od=t.due_date&&new Date(t.due_date)<today&&t.status!=='Complete';
@@ -939,8 +940,8 @@ function renderGantt(){
       if(t.due_date){
         const d=Math.floor((new Date(t.due_date)-min)/86400000),bx=d*DW+2,bw=Math.max(DW-4,8),by=y+6,bh=TH-12;
         const od=new Date(t.due_date)<today&&t.status!=='Complete';
-        const fills={'Complete':'#1a4a2a','In Progress':'#1a4a7a','Waiting / Blocked':'#4a2a00'};
-        const strokes={'Complete':'#50cc80','In Progress':'#60aaee','Waiting / Blocked':'#ee9940'};
+        const fills={'Complete':'#1a4a2a','In Progress':'#1a4a7a','In Review':'#2a1a5a','Waiting / Blocked':'#4a2a00'};
+        const strokes={'Complete':'#50cc80','In Progress':'#60aaee','In Review':'#b090ff','Waiting / Blocked':'#ee9940'};
         ctx.fillStyle=od?'#4a1a1a':(fills[t.status]||'#2e2c28');rr(ctx,bx,by,bw,bh,3);ctx.fill();
         ctx.strokeStyle=od?'#e05050':(strokes[t.status]||'#4a4740');ctx.lineWidth=1;rr(ctx,bx,by,bw,bh,3);ctx.stroke();
       }
@@ -1194,7 +1195,7 @@ function renderTodos(){
 
 async function cycleTodo(id){
   const t=db.todos.find(t=>t.id===id);if(!t)return;
-  const s=['To Do','In Progress','Waiting / Blocked','Complete'];
+  const s=['To Do','In Progress','In Review','Waiting / Blocked','Complete'];
   t.status=s[(s.indexOf(t.status)+1)%s.length];
   setSync('syncing');
   try{await api.patch('todos',id,{status:t.status});setSync('live');renderTodos();}
