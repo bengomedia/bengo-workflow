@@ -1119,7 +1119,7 @@ function renderTodos(){
     return`<tr>
       <td>${t.name}</td>
       <td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">—</span>'}</td>
-      <td>${ep?`<span class="tag">${pod?pod.name+' · ':''}</span><span class="ep-num" style="font-size:11px">${ep.default_title||'E'+ep.number}</span>`:pod?`<span class="tag">${pod.name}</span>`:'<span style="color:var(--text-muted)">—</span>'}</td>
+      <td>${epObj?`<span class="tag">${pod?pod.name+' · ':''}</span><span class="ep-num" style="font-size:11px">${epObj.default_title||'E'+epObj.number}</span>`:pod?`<span class="tag">${pod.name}</span>`:'<span style="color:var(--text-muted)">—</span>'}</td>
       <td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td>
       <td><button class="status-pill ${scls(t.status)}" onclick="cycleTodo('${t.id}')">${t.status}</button></td>
       <td>
