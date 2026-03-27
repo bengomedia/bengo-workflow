@@ -1115,6 +1115,7 @@ function renderTodos(){
   tbody.innerHTML=todos.map(t=>{
     const person=t.assigned_to?pById(t.assigned_to):null;
     const pod=t.podcast_id?podById(t.podcast_id):null;
+    const epObj=t.episode_id?epById(t.episode_id):null;
     const od=t.due_date&&new Date(t.due_date)<today&&t.status!=='Complete';
     return`<tr>
       <td>${t.name}</td>
