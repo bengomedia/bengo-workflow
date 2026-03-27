@@ -133,7 +133,7 @@
   .view-toggle-btn{background:transparent;border:none;color:var(--text-muted);padding:6px 14px;cursor:pointer;font-family:'Varela Round',sans-serif;font-size:12px;transition:all .15s;}
   .view-toggle-btn.active{background:var(--accent);color:#1a1400;font-weight:600;}
   .view-toggle-btn:hover:not(.active){background:var(--surface2);color:var(--text);}
-  .kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start;}
+  .kanban-board{display:grid;grid-template-columns:repeat(3,1fr) 48px;gap:14px;align-items:start;transition:grid-template-columns .3s;}.kanban-board.show-complete{grid-template-columns:repeat(4,1fr);}
   .kanban-col{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
   .kanban-col-header{padding:12px 14px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
   .kanban-col-header.todo{color:var(--todo-text);background:rgba(74,71,64,.2);}
@@ -148,7 +148,7 @@
   .kanban-card-meta{font-size:11px;color:var(--text-muted);display:flex;flex-direction:column;gap:3px;}
   .kanban-card-ep{color:var(--accent);font-family:'DM Serif Display',serif;}
   .kanban-card-overdue{color:#e05050;}
-  .kanban-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:20px 10px;}
+  .kanban-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:20px 10px;}.kanban-col.collapsed{overflow:hidden;cursor:pointer;}.kanban-col.collapsed .kanban-cards{display:none;}.kanban-col.collapsed .kanban-col-header{writing-mode:vertical-rl;height:120px;justify-content:center;padding:12px 6px;border-bottom:none;border-right:1px solid var(--border);}
 
 </style>
 </head>
@@ -356,19 +356,20 @@
     </div>
   </div>
 
-  <div class="modal hidden" id="modalImportTodos">
-    <div class="modal-title">Import To-Dos</div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Paste a list — one task per line. They'll all be assigned to the same person with the same due date.</p>
-    <div class="form-group"><label>Tasks (one per line)</label><textarea id="f-importList" rows="8" placeholder="Chase Adam re episode 3 edit&#10;Send invoice to Acme&#10;Book studio for next month&#10;..."></textarea></div>
-    <div class="form-row">
-      <div class="form-group"><label>Assign all to</label><select id="f-importAssigned"></select></div>
-      <div class="form-group"><label>Due Date (optional)</label><input type="date" id="f-importDue"></div>
+  <div class="modal hidden" id="modalImportTodos" style="width:600px;max-width:96vw">
+    <div class="modal-title">Import To-Dos from CSV</div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Upload a CSV file with columns: <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:12px">name, assigned_to, due_date, podcast, episode, add_to_all_episodes</code><br>Only <strong>name</strong> is required. Download the template to get started.</p>
+    <div style="margin-bottom:16px">
+      <button class="btn btn-ghost" onclick="downloadImportTemplate()" style="font-size:12px">↓ Download CSV Template</button>
     </div>
-    <div class="form-group"><label>Link to Podcast (optional)</label><select id="f-importPodcast"><option value="">— None —</option></select></div>
-    <div id="importPreview" style="font-size:12px;color:var(--text-muted);margin-top:4px"></div>
+    <div class="form-group">
+      <label>Upload CSV</label>
+      <input type="file" id="f-importFile" accept=".csv" onchange="previewImportCSV()" style="color:var(--text);padding:6px">
+    </div>
+    <div id="importPreview" style="margin-top:8px;max-height:240px;overflow-y:auto;font-size:12px"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn" id="saveImportBtn" onclick="saveImportTodos()">Import</button>
+      <button class="btn" id="saveImportBtn" onclick="saveImportTodos()" disabled>Import</button>
     </div>
   </div>
 
@@ -747,13 +748,22 @@ function renderKanban(){
     {key:'Waiting / Blocked',cls:'waiting',label:'Waiting'},
     {key:'Complete',cls:'complete',label:'Complete'},
   ];
+  const showComplete = document.getElementById('kanbanBoard')?.classList.contains('show-complete');
   document.getElementById('kanbanBoard').innerHTML=cols.map(col=>{
     const colTasks=tasks.filter(t=>t.status===col.key);
+    const isComplete = col.key==='Complete';
+    if(isComplete && !showComplete){
+      return`<div class="kanban-col collapsed" onclick="toggleKanbanComplete()" title="Click to expand">
+        <div class="kanban-col-header ${col.cls}">
+          <span>${col.label} (${colTasks.length})</span>
+        </div>
+        <div class="kanban-cards"></div>
+      </div>`;
+    }
+    const nextLabel={'To Do':'▶ Start','In Progress':'⏸ Block','Waiting / Blocked':'✓ Complete','Complete':'↺ Reopen'};
     const cards=colTasks.length?colTasks.map(t=>{
       const ep=epById(t.episode_id),pod=ep?podById(ep.podcast_id):null,person=t.assigned_to?pById(t.assigned_to):null;
       const od=t.due_date&&new Date(t.due_date)<today&&t.status!=='Complete';
-      const nextStatuses={'To Do':'In Progress','In Progress':'Waiting / Blocked','Waiting / Blocked':'Complete','Complete':'To Do'};
-      const nextLabel={'To Do':'▶ Start','In Progress':'⏸ Block','Waiting / Blocked':'✓ Complete','Complete':'↺ Reopen'};
       return`<div class="kanban-card" onclick="navigate('episode-tasks','${t.episode_id}')">
         <div class="kanban-card-title">${t.name}</div>
         <div class="kanban-card-meta">
@@ -766,15 +776,25 @@ function renderKanban(){
           <button class="status-pill ${scls(t.status)}" style="font-size:10px;padding:2px 8px" onclick="event.stopPropagation();qCycle('${t.id}')">${nextLabel[t.status]||'▶'}</button>
         </div>
       </div>`;
-    }).join(''):`<div class="kanban-empty">Nothing here</div>`;
-    return`<div class="kanban-col">
+    }).join(''):`<div class="kanban-empty">${isComplete?'Nothing done yet':'Nothing here'}</div>`;
+    return`<div class="kanban-col${isComplete?' complete-col':''}">
       <div class="kanban-col-header ${col.cls}">
         <span>${col.label}</span>
-        <span class="kanban-col-count">${colTasks.length}</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="kanban-col-count">${colTasks.length}</span>
+          ${isComplete?`<button onclick="toggleKanbanComplete()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:11px;padding:0" title="Collapse">✕</button>`:''}
+        </div>
       </div>
       <div class="kanban-cards">${cards}</div>
     </div>`;
   }).join('');
+}
+
+function toggleKanbanComplete(){
+  const board = document.getElementById('kanbanBoard');
+  board.classList.toggle('show-complete');
+  board.style.gridTemplateColumns = board.classList.contains('show-complete') ? 'repeat(4,1fr)' : 'repeat(3,1fr) 48px';
+  renderKanban();
 }
 
 function onUserChange(){currentUser=document.getElementById('currentUser').value;if(currentView==='mytasks')renderMyTasks();}
@@ -1266,34 +1286,125 @@ async function saveAdhocTask(){
 // ============================================================
 // IMPORT TODOS
 // ============================================================
+let importRows = [];
+
 function openImportTodosModal(){
-  document.getElementById('f-importList').value='';
-  document.getElementById('f-importDue').value='';
-  document.getElementById('f-importAssigned').innerHTML='<option value="">— Unassigned —</option>'+db.people.map(p=>`<option value="${p.id}">${p.name} (${p.role})</option>`).join('');
-  document.getElementById('f-importPodcast').innerHTML='<option value="">— None —</option>'+db.podcasts.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-  document.getElementById('importPreview').textContent='';
-  document.getElementById('f-importList').oninput = function(){
-    const lines = this.value.split('\n').map(l=>l.trim()).filter(Boolean);
-    document.getElementById('importPreview').textContent = lines.length ? `${lines.length} task${lines.length!==1?'s':''} ready to import.` : '';
-  };
+  importRows = [];
+  document.getElementById('importPreview').innerHTML = '';
+  document.getElementById('f-importFile').value = '';
+  document.getElementById('saveImportBtn').disabled = true;
   openModal('modalImportTodos');
 }
 
-async function saveImportTodos(){
-  const lines = document.getElementById('f-importList').value.split('\n').map(l=>l.trim()).filter(Boolean);
-  if(!lines.length){ alert('Paste at least one task'); return; }
-  const btn = document.getElementById('saveImportBtn');
-  btn.disabled=true; btn.textContent=`Importing ${lines.length}…`; setSync('syncing');
-  try{
-    const assignedTo = document.getElementById('f-importAssigned').value||null;
-    const dueDate = document.getElementById('f-importDue').value||null;
-    const podcastId = document.getElementById('f-importPodcast').value||null;
-    for(const name of lines){
-      const todo = {id:uid(),name,assigned_to:assignedTo,podcast_id:podcastId,episode_id:null,due_date:dueDate,status:'To Do',notes:''};
-      await api.post('todos',todo);
-      db.todos.push(todo);
+function downloadImportTemplate(){
+  const csv = [
+    'name,assigned_to,due_date,podcast,episode,add_to_all_episodes',
+    'Chase Adam re edit,Adam Whalley,2026-04-10,Bugs & Me,,',
+    'Send invoice,Emma Campbell,2026-04-15,Bugs & Me,S01E02,',
+    'Book studio,Chloe Monaghan,,Grim Valley,,yes',
+  ].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'bengo-todos-template.csv';
+  a.click();
+}
+
+function previewImportCSV(){
+  const file = document.getElementById('f-importFile').files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const lines = e.target.result.split('\n').map(l=>l.trim()).filter(Boolean);
+    const headers = lines[0].toLowerCase().split(',').map(h=>h.trim());
+    const rows = lines.slice(1).filter(l=>l.trim());
+    importRows = rows.map(row=>{
+      const vals = row.split(',').map(v=>v.trim());
+      const obj = {};
+      headers.forEach((h,i)=>obj[h]=vals[i]||'');
+      return obj;
+    }).filter(r=>r.name);
+
+    if(!importRows.length){
+      document.getElementById('importPreview').innerHTML = '<span style="color:#e05050">No valid rows found. Check your CSV has a name column.</span>';
+      document.getElementById('saveImportBtn').disabled = true;
+      return;
     }
-    setSync('live');closeModal();renderTodos();notify(`${lines.length} to-do${lines.length!==1?'s':''} imported!`);
+
+    // Resolve names to IDs for preview
+    const resolved = importRows.map(r=>{
+      const person = db.people.find(p=>p.name.toLowerCase()===r.assigned_to?.toLowerCase());
+      const pod = db.podcasts.find(p=>p.name.toLowerCase()===r.podcast?.toLowerCase());
+      const ep = pod ? db.episodes.find(e=>e.podcast_id===pod.id&&(e.default_title?.toLowerCase()===r.episode?.toLowerCase()||e.title?.toLowerCase()===r.episode?.toLowerCase())) : null;
+      const allEps = r.add_to_all_episodes?.toLowerCase()==='yes';
+      const epCount = allEps && pod ? db.episodes.filter(e=>e.podcast_id===pod.id).length : null;
+      return{
+        name:r.name,
+        person:person?person.name:'<span style="color:var(--accent2)">'+r.assigned_to+' (not found)</span>',
+        due:r.due_date||'—',
+        target: allEps&&pod ? `All ${epCount} eps in ${pod.name}` : ep ? `${pod.name} · ${ep.default_title||ep.title}` : pod ? pod.name : '—'
+      };
+    });
+
+    let html = `<table style="width:100%;border-collapse:collapse;margin-top:4px">
+      <thead><tr>
+        <th style="text-align:left;font-size:10px;color:var(--text-muted);padding:4px 8px;border-bottom:1px solid var(--border)">Task</th>
+        <th style="text-align:left;font-size:10px;color:var(--text-muted);padding:4px 8px;border-bottom:1px solid var(--border)">Assigned To</th>
+        <th style="text-align:left;font-size:10px;color:var(--text-muted);padding:4px 8px;border-bottom:1px solid var(--border)">Due</th>
+        <th style="text-align:left;font-size:10px;color:var(--text-muted);padding:4px 8px;border-bottom:1px solid var(--border)">Linked to</th>
+      </tr></thead><tbody>`;
+    resolved.forEach(r=>{
+      html+=`<tr>
+        <td style="font-size:12px;padding:4px 8px;border-bottom:1px solid var(--border)">${r.name}</td>
+        <td style="font-size:12px;padding:4px 8px;border-bottom:1px solid var(--border)">${r.person||'—'}</td>
+        <td style="font-size:12px;padding:4px 8px;border-bottom:1px solid var(--border)">${r.due}</td>
+        <td style="font-size:12px;padding:4px 8px;border-bottom:1px solid var(--border)">${r.target}</td>
+      </tr>`;
+    });
+    html += `</tbody></table><div style="margin-top:8px;color:var(--accent)">${importRows.length} task${importRows.length!==1?'s':''} ready to import.</div>`;
+    document.getElementById('importPreview').innerHTML = html;
+    document.getElementById('saveImportBtn').disabled = false;
+  };
+  reader.readAsText(file);
+}
+
+async function saveImportTodos(){
+  if(!importRows.length) return;
+  const btn = document.getElementById('saveImportBtn');
+  btn.disabled=true; btn.textContent=`Importing ${importRows.length}…`; setSync('syncing');
+  let count=0;
+  try{
+    for(const r of importRows){
+      const person = db.people.find(p=>p.name.toLowerCase()===r.assigned_to?.toLowerCase());
+      const pod = db.podcasts.find(p=>p.name.toLowerCase()===r.podcast?.toLowerCase());
+      const ep = pod ? db.episodes.find(e=>e.podcast_id===pod.id&&(e.default_title?.toLowerCase()===r.episode?.toLowerCase()||e.title?.toLowerCase()===r.episode?.toLowerCase())) : null;
+      const allEps = r.add_to_all_episodes?.toLowerCase()==='yes';
+
+      const base = {
+        name:r.name,
+        assigned_to:person?.id||null,
+        due_date:r.due_date||null,
+        podcast_id:pod?.id||null,
+        status:'To Do',
+        notes:''
+      };
+
+      if(allEps && pod){
+        // Add to all episodes in that podcast
+        const eps = db.episodes.filter(e=>e.podcast_id===pod.id);
+        for(const episode of eps){
+          const todo={...base,id:uid(),episode_id:episode.id};
+          await api.post('todos',todo);
+          db.todos.push(todo);
+          count++;
+        }
+      } else {
+        const todo={...base,id:uid(),episode_id:ep?.id||null};
+        await api.post('todos',todo);
+        db.todos.push(todo);
+        count++;
+      }
+    }
+    setSync('live');closeModal();renderTodos();notify(`${count} to-do${count!==1?'s':''} imported!`);
   }catch(e){
     setSync('error');notify('Error: '+e.message,true);
   }finally{
