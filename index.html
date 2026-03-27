@@ -1288,6 +1288,25 @@ async function saveAdhocTask(){
 // ============================================================
 let importRows = [];
 
+
+function parseImportDate(val){
+  if(!val||!val.trim()) return null;
+  val = val.trim();
+  // DD/MM/YYYY → YYYY-MM-DD
+  if(/^\d{2}\/\d{2}\/\d{4}$/.test(val)){
+    const[d,m,y]=val.split('/');
+    return `${y}-${m}-${d}`;
+  }
+  // DD-MM-YYYY → YYYY-MM-DD
+  if(/^\d{2}-\d{2}-\d{4}$/.test(val)){
+    const[d,m,y]=val.split('-');
+    return `${y}-${m}-${d}`;
+  }
+  // Already YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+  return null;
+}
+
 function openImportTodosModal(){
   importRows = [];
   document.getElementById('importPreview').innerHTML = '';
@@ -1299,8 +1318,8 @@ function openImportTodosModal(){
 function downloadImportTemplate(){
   const csv = [
     'name,assigned_to,due_date,podcast,episode,add_to_all_episodes',
-    'Chase Adam re edit,Adam Whalley,2026-04-10,Bugs & Me,,',
-    'Send invoice,Emma Campbell,2026-04-15,Bugs & Me,S01E02,',
+    'Chase Adam re edit,Adam Whalley,10/04/2026,Bugs & Me,,',
+    'Send invoice,Emma Campbell,15/04/2026,Bugs & Me,S01E02,',
     'Book studio,Chloe Monaghan,,Grim Valley,,yes',
   ].join('\n');
   const a = document.createElement('a');
@@ -1340,7 +1359,7 @@ function previewImportCSV(){
       return{
         name:r.name,
         person:person?person.name:'<span style="color:var(--accent2)">'+r.assigned_to+' (not found)</span>',
-        due:r.due_date||'—',
+        due:r.due_date||'—',_due:parseImportDate(r.due_date),
         target: allEps&&pod ? `All ${epCount} eps in ${pod.name}` : ep ? `${pod.name} · ${ep.default_title||ep.title}` : pod ? pod.name : '—'
       };
     });
@@ -1382,7 +1401,7 @@ async function saveImportTodos(){
       const base = {
         name:r.name,
         assigned_to:person?.id||null,
-        due_date:r.due_date||null,
+        due_date:parseImportDate(r.due_date)||null,
         podcast_id:pod?.id||null,
         status:'To Do',
         notes:''
