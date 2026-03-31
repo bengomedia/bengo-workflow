@@ -17,7 +17,7 @@
   .app{display:flex;height:100vh;overflow:hidden;}
   .sidebar{width:220px;min-width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;}
   .logo{padding:24px 20px 20px;border-bottom:1px solid var(--border);}
-  .logo-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--accent);}
+  .logo-title{font-family:'Varela Round',sans-serif;font-size:18px;color:var(--accent);}
   .logo-sub{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;}
   .nav{padding:12px 0;flex:1;}
   .nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;color:var(--text-muted);font-size:13px;transition:all .15s;border-left:2px solid transparent;}
@@ -32,7 +32,7 @@
   .sync-indicator.error{color:#e05050;}
   .main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
   .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-  .topbar-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);}
+  .topbar-title{font-family:'Varela Round',sans-serif;font-size:22px;color:var(--text);}
   .btn{background:var(--accent);color:#1a1400;border:none;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Varela Round',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
   .btn:hover{background:#f0d060;}
   .btn:disabled{opacity:.4;cursor:not-allowed;}
@@ -43,7 +43,7 @@
   .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:all .15s;position:relative;}
   .card:hover{border-color:var(--accent);background:var(--surface2);}
   .card-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:8px;}
-  .card-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);margin-bottom:6px;}
+  .card-title{font-family:'Varela Round',sans-serif;font-size:20px;color:var(--text);margin-bottom:6px;}
   .card-meta{font-size:12px;color:var(--text-muted);line-height:1.7;}
   .card-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;margin-top:10px;text-transform:uppercase;letter-spacing:.5px;}
   .badge-interview{background:rgba(232,197,71,.15);color:var(--accent);}
@@ -76,7 +76,7 @@
   .avatar{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#1a1400;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);}
   .modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;width:480px;max-width:95vw;max-height:85vh;overflow-y:auto;}
-  .modal-title{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:20px;}
+  .modal-title{font-family:'Varela Round',sans-serif;font-size:20px;margin-bottom:20px;}
   .form-group{margin-bottom:16px;}
   label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;font-weight:500;}
   input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:6px;font-size:13px;font-family:'Varela Round',sans-serif;outline:none;transition:border-color .15s;}
@@ -85,11 +85,11 @@
   .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;}
   .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;}
-  .stat-num{font-family:'DM Serif Display',serif;font-size:32px;color:var(--accent);line-height:1;}
+  .stat-num{font-family:'Varela Round',sans-serif;font-size:32px;color:var(--accent);line-height:1;}
   .stat-label{font-size:11px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px;}
   .people-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
   .person-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;display:flex;align-items:center;gap:14px;position:relative;}
-  .person-avatar{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#1a1400;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'DM Serif Display',serif;}
+  .person-avatar{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#1a1400;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Varela Round',sans-serif;}
   .person-name{font-weight:600;font-size:14px;}
   .person-role{font-size:12px;color:var(--accent);margin-top:2px;}
   .person-email{font-size:11px;color:var(--text-muted);margin-top:2px;}
@@ -98,18 +98,18 @@
   .admin-badge{font-size:9px;background:rgba(232,125,71,.2);color:var(--accent2);padding:1px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
   .empty{text-align:center;padding:60px 20px;color:var(--text-muted);}
   .empty-icon{font-size:40px;margin-bottom:12px;opacity:.4;}
-  .empty-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text-dim);margin-bottom:8px;}
+  .empty-title{font-family:'Varela Round',sans-serif;font-size:20px;color:var(--text-dim);margin-bottom:8px;}
   .empty-sub{font-size:13px;margin-bottom:20px;}
   .hidden{display:none!important;}
   .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
-  .section-title{font-family:'DM Serif Display',serif;font-size:18px;}
+  .section-title{font-family:'Varela Round',sans-serif;font-size:18px;}
   .tag{font-size:11px;color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);padding:2px 8px;border-radius:4px;}
-  .ep-num{font-weight:600;color:var(--accent);font-family:'DM Serif Display',serif;}
+  .ep-num{font-weight:600;color:var(--accent);font-family:'Varela Round',sans-serif;}
   .date-overdue{color:#e05050;}
   .breadcrumb{font-size:12px;color:var(--text-muted);margin-bottom:4px;}
   .breadcrumb span{color:var(--text-dim);}
   .loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999;}
-  .loading-title{font-family:'DM Serif Display',serif;font-size:28px;color:var(--accent);}
+  .loading-title{font-family:'Varela Round',sans-serif;font-size:28px;color:var(--accent);}
   .loading-sub{font-size:13px;color:var(--text-muted);}
   .spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
@@ -146,7 +146,7 @@
   .kanban-card:hover{border-color:var(--accent);}
   .kanban-card-title{font-size:13px;color:var(--text);margin-bottom:6px;line-height:1.4;}
   .kanban-card-meta{font-size:11px;color:var(--text-muted);display:flex;flex-direction:column;gap:3px;}
-  .kanban-card-ep{color:var(--accent);font-family:'DM Serif Display',serif;}
+  .kanban-card-ep{color:var(--accent);font-family:'Varela Round',sans-serif;}
   .kanban-card-overdue{color:#e05050;}
   .kanban-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:20px 10px;}.kanban-col.collapsed{overflow:hidden;cursor:pointer;}.kanban-col.collapsed .kanban-cards{display:none;}.kanban-col.collapsed .kanban-col-header{writing-mode:vertical-rl;height:120px;justify-content:center;padding:12px 6px;border-bottom:none;border-right:1px solid var(--border);}
 
@@ -222,7 +222,15 @@
           </div>
         </div>
         <div id="tasksTableView">
-          <table><thead><tr><th>Task</th><th>Episode</th><th>Podcast</th><th>Assigned To</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="allTasksBody"></tbody></table>
+          <table><thead><tr><th><input type="checkbox" id="selectAllTasks" onclick="toggleSelectAllTasks(this)" style="accent-color:var(--accent)"></th><th>Podcast</th><th>Episode</th><th>Task</th><th>Assigned To</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="allTasksBody"></tbody></table>
+        <div id="bulkActionsBar" class="hidden" style="margin-top:12px;display:flex;gap:10px;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 16px">
+          <span id="bulkCount" style="font-size:12px;color:var(--text-muted)"></span>
+          <select class="filter-select" id="bulkStatus" style="font-size:12px"><option value="">Set status…</option><option>To Do</option><option>In Progress</option><option>In Review</option><option>Waiting / Blocked</option><option>Complete</option></select>
+          <select class="filter-select" id="bulkAssignee" style="font-size:12px"><option value="">Reassign to…</option></select>
+          <div style="display:flex;align-items:center;gap:6px"><span style="font-size:12px;color:var(--text-muted)">Shift due date by</span><input type="number" id="bulkDays" placeholder="days" style="width:70px;font-size:12px;padding:6px 8px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:Varela Round,sans-serif"></div>
+          <button class="btn" style="font-size:12px;padding:6px 14px" onclick="applyBulkUpdate()">Apply</button>
+          <button class="btn btn-ghost" style="font-size:12px;padding:6px 14px" onclick="clearBulkSelection()">Clear</button>
+        </div>
         </div>
         <div id="tasksKanbanView" class="hidden">
           <div class="kanban-board" id="kanbanBoard"></div>
@@ -254,7 +262,7 @@
         </div>
         <table><thead><tr><th>Task</th><th>Assigned To</th><th>Podcast</th><th>Due Date</th><th>Status</th><th>Notes</th></tr></thead><tbody id="todosBody"></tbody></table>
       </div>
-      <div id="view-people" class="hidden"><div class="people-grid" id="peopleGrid"></div></div>
+      <div id="view-people" class="hidden"><div class="people-grid" id="peopleGrid"></div><div id="emailConfigSection" style="margin-top:32px"></div></div>
     </div>
   </main>
 </div>
@@ -266,7 +274,8 @@
     <div class="form-row"><div class="form-group"><label>Podcast Name</label><input type="text" id="f-podName" placeholder="e.g. The Bengo Show"></div><div class="form-group"><label>Podcast Type</label><select id="f-podType"><option>Interview</option><option>Solo</option><option>Panel</option><option>Scripted</option></select></div></div>
     <div class="form-row"><div class="form-group"><label>Client / Company</label><input type="text" id="f-podCompany"></div><div class="form-group"><label>Contact Name</label><input type="text" id="f-podContact"></div></div>
     <div class="form-row"><div class="form-group"><label>Executive Producer</label><select id="f-podEP"></select></div><div class="form-group"><label>Producer</label><select id="f-podProducer"></select></div></div>
-    <div class="form-row"><div class="form-group"><label>Editor</label><select id="f-podEditor"></select></div><div class="form-group"><label>Accounts</label><select id="f-podAccounts"></select></div></div>
+    <div class="form-row"><div class="form-group"><label>Assistant Producer (optional)</label><select id="f-podAP"></select></div><div class="form-group"><label>Editor</label><select id="f-podEditor"></select></div></div>
+    <div class="form-row"><div class="form-group"><label>Accounts</label><select id="f-podAccounts"></select></div></div>
     <div class="form-row"><div class="form-group" style="grid-column:1/-1"><label>Launch Frequency</label><select id="f-podFreq" style="max-width:220px"><option>Weekly</option><option>BiWeekly</option><option>Monthly</option></select></div></div>
     <div class="form-row"><div class="form-group"><label>Season</label><input type="number" id="f-podSeason" value="1" min="1"></div><div class="form-group"><label>Number of Episodes</label><input type="number" id="f-podEpCount" value="6" min="1"></div></div>
     <div class="form-row"><div class="form-group"><label>Episode 1 Launch Date</label><input type="date" id="f-podLaunchDate"></div><div class="form-group" style="display:flex;align-items:flex-end"><p style="font-size:11px;color:var(--text-muted);line-height:1.5">All episodes and tasks auto-generated from this date.</p></div></div>
@@ -518,14 +527,14 @@ function navigate(view,id){
   document.getElementById('pageTitle').textContent=titles[view]||view;
   document.getElementById('topbarActions').innerHTML='';
   if(view==='podcasts'){document.getElementById('topbarActions').innerHTML='<button class="btn" onclick="openNewPodcastModal()">+ New Podcast</button>';renderPodcasts();}
-  else if(view==='dashboard')renderDashboard();
+  else if(view==='dashboard'){document.getElementById('topbarActions').innerHTML='<button class="btn btn-ghost" id="sendRemindersBtn" onclick="sendUrgentReminders()">⏰ Send Reminders</button>';renderDashboard();}
   else if(view==='episodes'){if(id)currentPodcastId=id;renderEpisodes();}
-  else if(view==='episode-tasks'){if(id)currentEpisodeId=id;renderEpisodeTasks();document.getElementById('topbarActions').innerHTML='<button class="btn" onclick="openAdhocTaskModal()">+ Ad Hoc Task</button>';}
+  else if(view==='episode-tasks'){if(id)currentEpisodeId=id;renderEpisodeTasks();document.getElementById('topbarActions').innerHTML='<button class="btn btn-ghost" id="notifyEpisodeBtn" onclick="notifyEpisodeTeam()" style="margin-right:8px">📧 Notify Team</button><button class="btn" onclick="openAdhocTaskModal()">+ Ad Hoc Task</button>';}
   else if(view==='tasks'){populateTaskFilters();renderAllTasks();}
   else if(view==='mytasks')renderMyTasks();
   else if(view==='gantt'){populateGanttFilter();renderGantt();}
   else if(view==='todos'){document.getElementById('topbarActions').innerHTML='<button class="btn btn-ghost" onclick="openImportTodosModal()" style="margin-right:8px">↑ Import</button><button class="btn" onclick="openNewTodoModal()">+ New To-Do</button>';populateTodoFilters();renderTodos();}
-  else if(view==='people'){document.getElementById('topbarActions').innerHTML='<button class="btn" onclick="openNewPersonModal()">+ Add Person</button>';renderPeople();}
+  else if(view==='people'){document.getElementById('topbarActions').innerHTML='<button class="btn" onclick="openNewPersonModal()">+ Add Person</button>';renderPeople();renderEmailConfig();}
 }
 
 function renderDashboard(){
@@ -538,7 +547,15 @@ function renderDashboard(){
   const rows=open.length?open.map(t=>{
     const ep=epById(t.episode_id),pod=ep?podById(ep.podcast_id):null,person=t.assigned_to?pById(t.assigned_to):null;
     const od=t.due_date&&new Date(t.due_date)<today;
-    return`<tr class="clickable" onclick="navigate('episode-tasks','${t.episode_id}')"><td>${t.name}</td><td>${ep?`<span class="ep-num">${ep.default_title||'E'+ep.number}</span> ${ep.title||''}`:'—'}</td><td>${pod?pod.name:'—'}</td><td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">Unassigned</span>'}</td><td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td><td><button class="status-pill ${scls(t.status)}" onclick="event.stopPropagation();qCycle('${t.id}')">${t.status}</button></td></tr>`;
+    return`<tr class="clickable" onclick="navigate('episode-tasks','${t.episode_id}')">
+      <td onclick="event.stopPropagation()"><input type="checkbox" class="task-select-cb" data-id="${t.id}" onclick="onTaskCheckbox()" style="accent-color:var(--accent)"></td>
+      <td>${pod?pod.name:'—'}</td>
+      <td>${ep?`<span class="ep-num">${ep.default_title||'E'+ep.number}</span><span style="color:var(--text-muted);font-size:11px;margin-left:4px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle">${ep.title||''}</span>`:'—'}</td>
+      <td>${t.name}</td>
+      <td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">Unassigned</span>'}</td>
+      <td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td>
+      <td><button class="status-pill ${scls(t.status)}" onclick="event.stopPropagation();qCycle('${t.id}')">${t.status}</button></td>
+    </tr>`;
   }).join(''):`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">All clear! 🎉</td></tr>`;
 
   // Podcast progress rows
@@ -601,7 +618,7 @@ function renderPodcasts(){
   const el=document.getElementById('view-podcasts');
   if(!db.podcasts.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🎙</div><div class="empty-title">No podcasts yet</div><div class="empty-sub">Create your first podcast to get started.</div><button class="btn" onclick="openNewPodcastModal()">+ New Podcast</button></div>`;return;}
   el.innerHTML=`<div class="card-grid">${db.podcasts.map(p=>{
-    const ec=db.episodes.filter(e=>e.podcast_id===p.id).length,prod=pById(p.producer),epPerson=pById(p.ep);
+    const ec=db.episodes.filter(e=>e.podcast_id===p.id).length,prod=pById(p.producer),epPerson=pById(p.ep),apPerson=pById(p.ap);
     const taskPct=podcastProgress(p.id),epInfo=podcastEpisodeProgress(p.id);
     const pct=taskPct===null?0:taskPct;
     const color=pct===100?'var(--complete-text)':pct>50?'var(--accent)':'var(--accent2)';
@@ -612,7 +629,7 @@ function renderPodcasts(){
       <div class="card-meta">
         <span class="card-badge badge-${(p.type||'interview').toLowerCase()}">${p.type}</span><br>
         ${ec} episode${ec!==1?'s':''} · Season ${p.season} · ${p.frequency}<br>
-        EP: ${epPerson?epPerson.name:'—'} · Producer: ${prod?prod.name:'—'}
+        EP: ${epPerson?epPerson.name:'—'} · Producer: ${prod?prod.name:'—'}${apPerson?' · AP: '+apPerson.name:''}
       </div>
       <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -622,7 +639,24 @@ function renderPodcasts(){
         <div class="progress-bar" style="width:100%"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
       </div>
     </div>`;
-  }).join('')}</div>`;
+  }).join('')}</div>
+    ${completedPods.length?`
+    <div style="margin-top:28px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer" onclick="this.nextElementSibling.classList.toggle('hidden');this.querySelector('.caret').textContent=this.nextElementSibling.classList.contains('hidden')?'▸':'▾'">
+        <span class="caret" style="color:var(--text-dim);font-size:12px">▸</span>
+        <span style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Completed Podcasts (${completedPods.length})</span>
+      </div>
+      <div class="card-grid hidden">${completedPods.map(p=>{
+        const ec=db.episodes.filter(e=>e.podcast_id===p.id).length,prod=pById(p.producer),epPerson=pById(p.ep),apPerson=pById(p.ap);
+        return\`<div class="card" style="opacity:.5" onclick="navigate('episodes','${p.id}')">
+          <div class="card-actions"><div class="icon-btn danger" onclick="event.stopPropagation();deletePodcast('${p.id}')">🗑</div></div>
+          <div class="card-label">${p.company||''} ${p.contact?'· '+p.contact:''}</div>
+          <div class="card-title">${p.name}</div>
+          <div class="card-meta"><span class="card-badge badge-${(p.type||'interview').toLowerCase()}">${p.type}</span><br>${ec} episodes · <span style="color:var(--complete-text)">✓ Complete</span></div>
+        </div>\`;
+      }).join('')}</div>
+    </div>`:''}
+  `;
 }
 
 async function deletePodcast(id){
@@ -741,7 +775,7 @@ function renderAllTasks(){
   const today=new Date();
   document.getElementById('allTasksBody').innerHTML=tasks.length?tasks.map(t=>{
     const ep=epById(t.episode_id),pod=ep?podById(ep.podcast_id):null,person=t.assigned_to?pById(t.assigned_to):null,od=t.due_date&&new Date(t.due_date)<today&&t.status!=='Complete';
-    return`<tr class="clickable" onclick="navigate('episode-tasks','${t.episode_id}')"><td>${t.name}</td><td>${ep?`<span class="ep-num">${ep.default_title||'E'+ep.number}</span> ${ep.title||''}`:'—'}</td><td>${pod?pod.name:'—'}</td><td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">Unassigned</span>'}</td><td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td><td><button class="status-pill ${scls(t.status)}" onclick="event.stopPropagation();qCycle('${t.id}')">${t.status}</button></td></tr>`;
+    return`<tr class="clickable" onclick="navigate('episode-tasks','${t.episode_id}')"><td>${pod?pod.name:'—'}</td><td>${ep?`<span class="ep-num">${ep.default_title||'E'+ep.number}</span><span style="color:var(--text-muted);font-size:11px;margin-left:4px">${ep.title||''}</span>`:'—'}</td><td>${t.name}</td><td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">Unassigned</span>'}</td><td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td><td><button class="status-pill ${scls(t.status)}" onclick="event.stopPropagation();qCycle('${t.id}')">${t.status}</button></td></tr>`;
   }).join(''):`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">No tasks match your filters.</td></tr>`;
 }
 
@@ -880,11 +914,25 @@ function renderGantt(){
   const pf=document.getElementById('ganttPodcastFilter')?.value||'';
   const eps=db.episodes.filter(e=>!pf||e.podcast_id===pf).sort((a,b)=>(a.launch_date||'').localeCompare(b.launch_date||''));
   const min=gMin(),max=gMax(),totalDays=Math.ceil((max-min)/86400000),DW=ganttDayWidth;
-  const RH=38,TH=30,HH=52;
+  const RH=38,TH=30,HH=52,PH=44;
   const today=new Date();today.setHours(0,0,0,0);
 
+  // Group episodes by podcast
+  const podcastIds = pf ? [pf] : [...new Set(eps.map(e=>e.podcast_id))];
   const rows=[];
-  for(const ep of eps){const tasks=epTasks(ep.id),pod=podById(ep.podcast_id);rows.push({type:'ep',ep,pod,tasks,exp:ganttExpanded[ep.id]});if(ganttExpanded[ep.id])for(const t of tasks)rows.push({type:'task',task:t,ep});}
+  for(const podId of podcastIds){
+    const pod=podById(podId);if(!pod)continue;
+    const podEps=eps.filter(e=>e.podcast_id===podId);
+    const podExpanded=ganttExpanded['pod_'+podId]!==false; // default expanded
+    rows.push({type:'podcast',pod,eps:podEps,expanded:podExpanded});
+    if(podExpanded){
+      for(const ep of podEps){
+        const tasks=epTasks(ep.id);
+        rows.push({type:'ep',ep,pod,tasks,exp:ganttExpanded[ep.id]});
+        if(ganttExpanded[ep.id])for(const t of tasks)rows.push({type:'task',task:t,ep});
+      }
+    }
+  }
 
   let lh=`<div class="gantt-label-header">Episode / Task</div>`;
   for(const r of rows){
@@ -894,7 +942,7 @@ function renderGantt(){
   document.getElementById('ganttLabels').innerHTML=lh;
 
   const canvas=document.getElementById('ganttCanvas');
-  const totalH=HH+rows.reduce((s,r)=>s+(r.type==='ep'?RH:TH),0);
+  const totalH=HH+rows.reduce((s,r)=>s+(r.type==='podcast'?PH:r.type==='ep'?RH:TH),0);
   canvas.width=totalDays*DW;canvas.height=totalH;
   const ctx=canvas.getContext('2d');
   ctx.fillStyle='#1a1916';ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -920,7 +968,14 @@ function renderGantt(){
 
   let y=HH;
   for(const r of rows){
-    const rh=r.type==='ep'?RH:TH;
+    const rh=r.type==='podcast'?PH:r.type==='ep'?RH:TH;
+    if(r.type==='podcast'){
+      ctx.fillStyle='rgba(255,255,255,.04)';ctx.fillRect(0,y,canvas.width,rh);
+      ctx.strokeStyle='#3a3830';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,y+rh);ctx.lineTo(canvas.width,y+rh);ctx.stroke();
+      // Podcast label on canvas
+      ctx.fillStyle='#e8c547';ctx.font='bold 11px "Varela Round",sans-serif';ctx.fillText(r.pod.name,4,y+rh/2+4);
+      y+=rh;continue;
+    }
     if(r.type==='ep'){ctx.fillStyle='rgba(255,255,255,.02)';ctx.fillRect(0,y,canvas.width,rh);}
     ctx.strokeStyle='#2e2c28';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(0,y+rh);ctx.lineTo(canvas.width,y+rh);ctx.stroke();
 
@@ -955,6 +1010,7 @@ function renderGantt(){
 
 function rr(ctx,x,y,w,h,r){if(w<2*r)r=w/2;if(h<2*r)r=h/2;ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function ganttToggle(id){ganttExpanded[id]=!ganttExpanded[id];renderGantt();}
+function ganttTogglePod(podId){ganttExpanded["pod_"+podId]=ganttExpanded["pod_"+podId]===false?true:false;renderGantt();}
 
 // MODALS
 function openModal(id){document.getElementById('modalOverlay').classList.remove('hidden');document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
@@ -970,7 +1026,7 @@ function openNewPodcastModal(){
   document.getElementById('f-podSeason').value=1;document.getElementById('f-podEpCount').value=6;document.getElementById('f-podLaunchDate').value='';
   document.getElementById('f-podLaunchDate').closest('.form-row').style.display='';
   document.getElementById('savePodcastBtn').textContent='Create Podcast + Episodes';
-  ['f-podEP','f-podProducer','f-podEditor','f-podAccounts'].forEach(id=>{document.getElementById(id).innerHTML='<option value="">— Select —</option>'+db.people.map(p=>`<option value="${p.id}">${p.name} (${p.role})</option>`).join('');});
+  ['f-podEP','f-podProducer','f-podAP','f-podEditor','f-podAccounts'].forEach(function(fid){var sel=document.getElementById(fid);if(!sel)return;var emptyLabel=fid==='f-podAP'?'— None —':'— Select —';sel.innerHTML='<option value="">'+emptyLabel+'</option>'+db.people.map(p=>'<option value="'+p.id+'">'+p.name+' ('+p.role+')</option>').join('');});
   openModal('modalPodcast');
 }
 
@@ -989,11 +1045,12 @@ function openEditPodcastModal(id){
   // Hide launch date field when editing
   document.getElementById('f-podLaunchDate').closest('.form-row').style.display='none';
   document.getElementById('savePodcastBtn').textContent='Save Changes';
-  ['f-podEP','f-podProducer','f-podEditor','f-podAccounts'].forEach(selId=>{
-    const field = selId.replace('f-pod','').toLowerCase();
-    const fieldMap = {'ep':'ep','producer':'producer','editor':'editor','accounts':'accounts'};
-    const key = fieldMap[field]||field;
-    document.getElementById(selId).innerHTML='<option value="">— Select —</option>'+db.people.map(per=>`<option value="${per.id}" ${p[key]===per.id?'selected':''}>${per.name} (${per.role})</option>`).join('');
+  ['f-podEP','f-podProducer','f-podAP','f-podEditor','f-podAccounts'].forEach(function(selId){
+    var fieldMap={'f-podEP':'ep','f-podProducer':'producer','f-podAP':'ap','f-podEditor':'editor','f-podAccounts':'accounts'};
+    var key=fieldMap[selId]||selId.replace('f-pod','').toLowerCase();
+    var emptyLabel=selId==='f-podAP'?'— None —':'— Select —';
+    var sel=document.getElementById(selId);if(!sel)return;
+    sel.innerHTML='<option value="">'+emptyLabel+'</option>'+db.people.map(function(per){return '<option value="'+per.id+'"'+(p[key]===per.id?' selected':'')+'>'+per.name+' ('+per.role+')</option>';}).join('');
   });
   openModal('modalPodcast');
 }
@@ -1007,10 +1064,10 @@ async function savePodcast(){
     const btn=document.getElementById('savePodcastBtn');btn.disabled=true;btn.textContent='Saving…';setSync('syncing');
     try{
       const oldPod = podById(editingPodcastId);
-      const data={name,type:document.getElementById('f-podType').value,company:document.getElementById('f-podCompany').value.trim(),contact:document.getElementById('f-podContact').value.trim(),ep:document.getElementById('f-podEP').value||null,producer:document.getElementById('f-podProducer').value||null,editor:document.getElementById('f-podEditor').value||null,accounts:document.getElementById('f-podAccounts').value||null,season:document.getElementById('f-podSeason').value,episode_count:parseInt(document.getElementById('f-podEpCount').value)||6,frequency:document.getElementById('f-podFreq').value};
+      const data={name,type:document.getElementById('f-podType').value,company:document.getElementById('f-podCompany').value.trim(),contact:document.getElementById('f-podContact').value.trim(),ep:document.getElementById('f-podEP').value||null,producer:document.getElementById('f-podProducer').value||null,ap:document.getElementById('f-podAP').value||null,editor:document.getElementById('f-podEditor').value||null,accounts:document.getElementById('f-podAccounts').value||null,season:document.getElementById('f-podSeason').value,episode_count:parseInt(document.getElementById('f-podEpCount').value)||6,frequency:document.getElementById('f-podFreq').value};
 
       // Detect which roles changed
-      const roleMap = {'Executive Producer':'ep','Producer':'producer','Editor':'editor','Accounts':'accounts'};
+      const roleMap = {'Executive Producer':'ep','Producer':'producer','Assistant Producer':'ap','Editor':'editor','Accounts':'accounts'};
       const changedRoles = {};
       Object.entries(roleMap).forEach(([roleName, field]) => {
         if(oldPod[field] !== data[field]) changedRoles[roleName] = data[field];
@@ -1048,7 +1105,7 @@ async function savePodcast(){
   if(!ld){alert('Episode 1 launch date required');return;}
   const btn=document.getElementById('savePodcastBtn');btn.disabled=true;btn.textContent='Creating…';setSync('syncing');
   try{
-    const pod={id:uid(),name,type:document.getElementById('f-podType').value,company:document.getElementById('f-podCompany').value.trim(),contact:document.getElementById('f-podContact').value.trim(),ep:document.getElementById('f-podEP').value||null,producer:document.getElementById('f-podProducer').value||null,editor:document.getElementById('f-podEditor').value||null,accounts:document.getElementById('f-podAccounts').value||null,season:document.getElementById('f-podSeason').value,episode_count:parseInt(document.getElementById('f-podEpCount').value)||6,frequency:document.getElementById('f-podFreq').value};
+    const pod={id:uid(),name,type:document.getElementById('f-podType').value,company:document.getElementById('f-podCompany').value.trim(),contact:document.getElementById('f-podContact').value.trim(),ep:document.getElementById('f-podEP').value||null,producer:document.getElementById('f-podProducer').value||null,ap:document.getElementById('f-podAP').value||null,editor:document.getElementById('f-podEditor').value||null,accounts:document.getElementById('f-podAccounts').value||null,season:document.getElementById('f-podSeason').value,episode_count:parseInt(document.getElementById('f-podEpCount').value)||6,frequency:document.getElementById('f-podFreq').value};
     await api.post('podcasts',pod);db.podcasts.push(pod);
     const tmpls=TEMPLATES[pod.type]||TEMPLATES.Interview,interval=freqDays(pod.frequency),sn=String(pod.season).padStart(2,'0');
     for(let i=0;i<pod.episode_count;i++){
@@ -1056,7 +1113,7 @@ async function savePodcast(){
       const ep={id:uid(),podcast_id:pod.id,number:i+1,title:'',default_title:`S${sn}E${en}`,launch_date:epLaunch,status:'To Do'};
       await api.post('episodes',ep);db.episodes.push(ep);
       for(const tmpl of tmpls){
-        const rm={'Executive Producer':pod.ep,'Producer':pod.producer,'Editor':pod.editor,'Accounts':pod.accounts||null};
+        const rm={'Executive Producer':pod.ep,'Producer':pod.producer,'Assistant Producer':pod.ap||null,'Editor':pod.editor,'Accounts':pod.accounts||null};
         const task={id:uid(),episode_id:ep.id,name:tmpl.name,role:tmpl.role,assigned_to:rm[tmpl.role]||null,status:'To Do',due_date:tmpl.days>0?addDays(epLaunch,-tmpl.days):epLaunch,start_date:null,task_order:tmpl.order,notes:''};
         await api.post('tasks',task);db.tasks.push(task);
       }
@@ -1082,7 +1139,7 @@ async function saveEpisode(){
     await api.post('episodes',ep);db.episodes.push(ep);
     const tmpls=TEMPLATES[pod.type]||TEMPLATES.Interview;
     for(const tmpl of tmpls){
-      const rm={'Executive Producer':pod.ep,'Producer':pod.producer,'Editor':pod.editor,'Accounts':pod.accounts||null};
+      const rm={'Executive Producer':pod.ep,'Producer':pod.producer,'Assistant Producer':pod.ap||null,'Editor':pod.editor,'Accounts':pod.accounts||null};
       const task={id:uid(),episode_id:ep.id,name:tmpl.name,role:tmpl.role,assigned_to:rm[tmpl.role]||null,status:'To Do',due_date:tmpl.days>0?addDays(dv,-tmpl.days):dv,start_date:null,task_order:tmpl.order,notes:''};
       await api.post('tasks',task);db.tasks.push(task);
     }
@@ -1522,6 +1579,185 @@ function populateTodoEpisodes(){
   epSel.innerHTML='<option value="">— None —</option>'+eps.map(e=>`<option value="${e.id}">${e.default_title||'E'+e.number}${e.title?' · '+e.title:''}</option>`).join('');
 }
 
+
+// ============================================================
+// BULK TASK UPDATES
+// ============================================================
+let selectedTaskIds = new Set();
+
+function toggleSelectAllTasks(cb){
+  const boxes = document.querySelectorAll('.task-select-cb');
+  boxes.forEach(function(b){ b.checked = cb.checked; });
+  selectedTaskIds = cb.checked ? new Set([...boxes].map(b=>b.dataset.id)) : new Set();
+  updateBulkBar();
+}
+
+function onTaskCheckbox(){
+  selectedTaskIds = new Set([...document.querySelectorAll('.task-select-cb:checked')].map(b=>b.dataset.id));
+  const all = document.querySelectorAll('.task-select-cb');
+  const selAll = document.getElementById('selectAllTasks');
+  if(selAll) selAll.checked = selectedTaskIds.size === all.length && all.length > 0;
+  updateBulkBar();
+}
+
+function updateBulkBar(){
+  const bar = document.getElementById('bulkActionsBar');
+  const count = document.getElementById('bulkCount');
+  if(!bar) return;
+  if(selectedTaskIds.size > 0){
+    bar.classList.remove('hidden');
+    bar.style.display='flex';
+    count.textContent = selectedTaskIds.size + ' task' + (selectedTaskIds.size!==1?'s':'') + ' selected';
+    // Populate assignee dropdown
+    document.getElementById('bulkAssignee').innerHTML = '<option value="">Reassign to…</option>' +
+      db.people.map(function(p){return '<option value="'+p.id+'">'+p.name+'</option>';}).join('');
+  } else {
+    bar.classList.add('hidden');
+    bar.style.display='none';
+  }
+}
+
+function clearBulkSelection(){
+  selectedTaskIds = new Set();
+  document.querySelectorAll('.task-select-cb').forEach(function(b){b.checked=false;});
+  const selAll = document.getElementById('selectAllTasks');
+  if(selAll) selAll.checked = false;
+  updateBulkBar();
+}
+
+async function applyBulkUpdate(){
+  if(!selectedTaskIds.size) return;
+  const status = document.getElementById('bulkStatus').value;
+  const assignee = document.getElementById('bulkAssignee').value;
+  const days = parseInt(document.getElementById('bulkDays').value);
+  if(!status && !assignee && !days){ notify('Pick something to update first'); return; }
+  if(!confirm('Update ' + selectedTaskIds.size + ' tasks?')) return;
+  setSync('syncing');
+  try{
+    for(const tid of selectedTaskIds){
+      const t = db.tasks.find(function(t){return t.id===tid;});
+      if(!t) continue;
+      const patch = {};
+      if(status) patch.status = status;
+      if(assignee) patch.assigned_to = assignee;
+      if(days && t.due_date){
+        patch.due_date = addDays(t.due_date, days);
+      }
+      if(Object.keys(patch).length){
+        await api.patch('tasks', tid, patch);
+        Object.assign(t, patch);
+      }
+    }
+    setSync('live');
+    clearBulkSelection();
+    renderAllTasks();
+    notify('Bulk update applied!');
+  }catch(err){
+    setSync('error');notify('Error: '+err.message,true);
+  }
+}
+
+
+// ============================================================
+// EMAIL NOTIFICATIONS (Resend)
+// ============================================================
+const RESEND_KEY = ''; // Paste your Resend API key here
+const FROM_EMAIL = 'workflow@bengomedia.com'; // Update to your verified sending domain
+
+async function sendEmail(to, subject, html){
+  if(!RESEND_KEY){ notify('Add your Resend API key to enable emails', true); return false; }
+  try{
+    const res = await fetch('https://api.resend.com/emails', {
+      method:'POST',
+      headers:{'Authorization':'Bearer '+RESEND_KEY,'Content-Type':'application/json'},
+      body: JSON.stringify({from:FROM_EMAIL, to:[to], subject, html})
+    });
+    return res.ok;
+  }catch(err){ console.error('Email error:', err); return false; }
+}
+
+async function notifyEpisodeTeam(){
+  const ep = epById(currentEpisodeId);
+  if(!ep) return;
+  const pod = podById(ep.podcast_id);
+  const tasks = epTasks(currentEpisodeId).filter(function(t){return t.status!=='Complete';});
+  if(!tasks.length){ notify('No open tasks to notify about'); return; }
+
+  // Group tasks by person
+  const byPerson = {};
+  tasks.forEach(function(t){
+    if(!t.assigned_to) return;
+    if(!byPerson[t.assigned_to]) byPerson[t.assigned_to]=[];
+    byPerson[t.assigned_to].push(t);
+  });
+
+  const btn = document.getElementById('notifyEpisodeBtn');
+  if(btn){btn.disabled=true;btn.textContent='Sending…';}
+  let sent=0;
+  for(const personId in byPerson){
+    const person = pById(personId);
+    if(!person||!person.email) continue;
+    const taskList = byPerson[personId].map(function(t){
+      return '<tr><td style="padding:6px 12px;border-bottom:1px solid #eee">'+t.name+'</td><td style="padding:6px 12px;border-bottom:1px solid #eee;color:#888">'+formatDate(t.due_date)+'</td><td style="padding:6px 12px;border-bottom:1px solid #eee">'+t.status+'</td></tr>';
+    }).join('');
+    const html = '<div style="font-family:sans-serif;max-width:600px"><h2 style="color:#e8c547">Bengo Workflow</h2><p>Hi '+person.name.split(' ')[0]+',</p><p>Here are your open tasks for <strong>'+(ep.title||ep.default_title||'Episode '+ep.number)+'</strong> ('+pod.name+'):</p><table style="width:100%;border-collapse:collapse;margin:16px 0"><thead><tr><th style="text-align:left;padding:6px 12px;background:#f5f5f5">Task</th><th style="text-align:left;padding:6px 12px;background:#f5f5f5">Due</th><th style="text-align:left;padding:6px 12px;background:#f5f5f5">Status</th></tr></thead><tbody>'+taskList+'</tbody></table><p style="color:#888;font-size:12px">Bengo Media Workflow</p></div>';
+    const ok = await sendEmail(person.email, 'Your tasks: '+pod.name+' — '+(ep.title||ep.default_title||'Ep '+ep.number), html);
+    if(ok) sent++;
+  }
+  if(btn){btn.disabled=false;btn.textContent='📧 Notify Team';}
+  notify(sent>0 ? sent+' email'+(sent!==1?'s':'')+' sent!' : 'No emails sent — check Resend key and email addresses', sent===0);
+}
+
+async function sendUrgentReminders(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const threshold = new Date(today); threshold.setDate(threshold.getDate()+3);
+  const urgentTasks = db.tasks.filter(function(t){
+    if(t.status==='Complete'||!t.due_date||!t.assigned_to) return false;
+    const dd = new Date(t.due_date);
+    return dd <= threshold && dd >= today;
+  });
+  if(!urgentTasks.length){ notify('No urgent tasks in the next 3 days'); return; }
+
+  const byPerson = {};
+  urgentTasks.forEach(function(t){
+    if(!byPerson[t.assigned_to]) byPerson[t.assigned_to]=[];
+    byPerson[t.assigned_to].push(t);
+  });
+
+  const btn = document.getElementById('sendRemindersBtn');
+  if(btn){btn.disabled=true;btn.textContent='Sending…';}
+  let sent=0;
+  for(const personId in byPerson){
+    const person = pById(personId);
+    if(!person||!person.email) continue;
+    const taskList = byPerson[personId].map(function(t){
+      const ep=epById(t.episode_id),pod=ep?podById(ep.podcast_id):null;
+      const dd=new Date(t.due_date),isOverdue=dd<today;
+      return '<tr><td style="padding:6px 12px;border-bottom:1px solid #eee">'+t.name+'</td><td style="padding:6px 12px;border-bottom:1px solid #eee">'+(pod?pod.name:'')+'</td><td style="padding:6px 12px;border-bottom:1px solid #eee;color:'+(isOverdue?'#e05050':'#888')+'">'+formatDate(t.due_date)+(isOverdue?' ⚠ OVERDUE':'')+'</td></tr>';
+    }).join('');
+    const html = '<div style="font-family:sans-serif;max-width:600px"><h2 style="color:#e8c547">⏰ Task Reminders — Bengo Workflow</h2><p>Hi '+person.name.split(' ')[0]+',</p><p>You have <strong>'+byPerson[personId].length+' task'+(byPerson[personId].length!==1?'s':'')+' due within 3 days:</strong></p><table style="width:100%;border-collapse:collapse;margin:16px 0"><thead><tr><th style="text-align:left;padding:6px 12px;background:#f5f5f5">Task</th><th style="text-align:left;padding:6px 12px;background:#f5f5f5">Podcast</th><th style="text-align:left;padding:6px 12px;background:#f5f5f5">Due</th></tr></thead><tbody>'+taskList+'</tbody></table><p style="color:#888;font-size:12px">Bengo Media Workflow</p></div>';
+    const ok = await sendEmail(person.email, '⏰ '+byPerson[personId].length+' task'+(byPerson[personId].length!==1?'s':'')+' due soon — Bengo Workflow', html);
+    if(ok) sent++;
+  }
+  if(btn){btn.disabled=false;btn.textContent='⏰ Send Reminders';}
+  notify(sent>0 ? sent+' reminder'+(sent!==1?'s':'')+' sent!' : 'No reminders sent — check Resend key', sent===0);
+}
+
+
+function renderEmailConfig(){
+  const hasKey = !!RESEND_KEY;
+  document.getElementById('emailConfigSection').innerHTML = \`
+    <div class="section-header"><div class="section-title">Email Settings</div></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;max-width:500px">
+      \${hasKey
+        ? '<div style="color:var(--complete-text);margin-bottom:12px">✓ Resend connected</div>'
+        : '<div style="color:var(--accent2);margin-bottom:12px">⚠ No Resend API key configured</div><p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Sign up free at <a href=\"https://resend.com\" target=\"_blank\" style=\"color:var(--accent)\">resend.com</a>, get your API key, then ask Emma to add it to the app code. You also need a verified sending domain.</p>'
+      }
+      <p style="font-size:12px;color:var(--text-muted)">Once configured, use <strong>📧 Notify Team</strong> on any episode to email the team their tasks, and <strong>⏰ Send Reminders</strong> on the dashboard to alert everyone with tasks due in 3 days.</p>
+    </div>
+  \`;
+}
+
 // ============================================================
 // BATCH EPISODES
 // ============================================================
@@ -1578,7 +1814,7 @@ async function saveBatchEpisodes(){
       await api.post('episodes',ep);
       db.episodes.push(ep);
       for(const tmpl of tmpls){
-        const rm={'Executive Producer':pod.ep,'Producer':pod.producer,'Editor':pod.editor,'Accounts':pod.accounts};
+        const rm={'Executive Producer':pod.ep,'Producer':pod.producer,'Assistant Producer':pod.ap||null,'Editor':pod.editor,'Accounts':pod.accounts};
         const task={id:uid(),episode_id:ep.id,name:tmpl.name,role:tmpl.role,assigned_to:rm[tmpl.role]||null,status:'To Do',due_date:tmpl.days>0?addDays(epLaunch,-tmpl.days):epLaunch,start_date:null,task_order:tmpl.order,notes:''};
         await api.post('tasks',task);
         db.tasks.push(task);
@@ -1665,6 +1901,16 @@ async function saveReschedule(){
   } finally {
     btn.disabled = false;
     btn.textContent = 'Reschedule + Shift Tasks';
+  }
+}
+
+async function checkApColumn(){
+  // Silently check if ap column exists by trying to read it
+  try{
+    await api.get('podcasts','select=ap&limit=1');
+  }catch(err){
+    // Column may not exist yet - user needs to run SQL
+    console.log('AP column may need adding to podcasts table');
   }
 }
 
