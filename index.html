@@ -594,6 +594,41 @@ function renderDashboard(){
     </tr>`;
   }).join('');
 
+  // Capacity view
+  const capacityRows = db.people.map(p=>{
+    const myTasks = db.tasks.filter(t=>t.assigned_to===p.id&&t.status!=='Complete');
+    const myTodos = db.todos.filter(t=>t.assigned_to===p.id&&t.status!=='Complete');
+    const allOpen = [...myTasks,...myTodos];
+    const overdueCount = allOpen.filter(t=>t.due_date&&new Date(t.due_date)<today).length;
+    const urgentCount = allOpen.filter(t=>{
+      if(!t.due_date||new Date(t.due_date)<today)return false;
+      const d=new Date(t.due_date);d.setHours(0,0,0,0);
+      const diff=Math.round((d-today)/86400000);
+      return diff<=3;
+    }).length;
+    const total=allOpen.length;
+    if(!total&&!overdueCount)return null;
+    // Health indicator
+    let health,healthColor,healthLabel;
+    if(overdueCount>0){health=Math.round((overdueCount/Math.max(total,1))*100);healthColor='#e05050';healthLabel=overdueCount+' overdue';}
+    else if(urgentCount>0){healthColor='#ee9940';healthLabel=urgentCount+' due soon';}
+    else{healthColor='var(--complete-text)';healthLabel='On track';}
+    const barW=Math.min(100,total*8); // rough capacity bar
+    return`<tr class="clickable" onclick="currentUser='${p.id}';document.getElementById('currentUser').value='${p.id}';navigate('mytasks')">
+      <td><span class="assignee-chip"><span class="avatar">${ini(p.name)}</span>${p.name}</span></td>
+      <td><span style="font-size:11px;color:var(--text-muted)">${p.role}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="background:var(--surface2);border-radius:3px;height:8px;width:100px;overflow:hidden">
+            <div style="height:100%;width:${barW}%;background:${overdueCount>0?'#e05050':urgentCount>0?'#ee9940':'var(--inprogress)'};border-radius:3px;transition:width .3s"></div>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted)">${total} open</span>
+        </div>
+      </td>
+      <td><span style="font-size:12px;color:${healthColor}">${healthLabel}</span></td>
+    </tr>`;
+  }).filter(Boolean).join('');
+
   document.getElementById('view-dashboard').innerHTML=`
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num">${db.podcasts.length}</div><div class="stat-label">Podcasts</div></div>
@@ -613,6 +648,12 @@ function renderDashboard(){
       </div>
     </div>
 
+    <div class="section-header"><div class="section-title">Team Capacity</div></div>
+    <table style="margin-bottom:32px">
+      <thead><tr><th>Person</th><th>Role</th><th>Workload</th><th>Status</th></tr></thead>
+      <tbody>${capacityRows||'<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-muted)">No open tasks assigned.</td></tr>'}</tbody>
+    </table>
+
     <div class="section-header"><div class="section-title">Podcast Progress</div></div>
     <table style="margin-bottom:32px">
       <thead><tr><th>Podcast</th><th>Episodes</th><th>Task Completion</th></tr></thead>
@@ -620,13 +661,15 @@ function renderDashboard(){
     </table>
 
     <div class="section-header"><div class="section-title">Open Tasks</div></div>
-    <table><thead><tr><th>Task</th><th>Episode</th><th>Podcast</th><th>Assigned To</th><th>Due</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+    <table><thead><tr><th>Podcast</th><th>Episode</th><th>Task</th><th>Assigned To</th><th>Due</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 function renderPodcasts(){
   const el=document.getElementById('view-podcasts');
   if(!db.podcasts.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🎙</div><div class="empty-title">No podcasts yet</div><div class="empty-sub">Create your first podcast to get started.</div><button class="btn" onclick="openNewPodcastModal()">+ New Podcast</button></div>`;return;}
-  el.innerHTML=`<div class="card-grid">${db.podcasts.map(p=>{
+  const activePods=db.podcasts.filter(p=>{const pp=podcastProgress(p.id);return pp===null||pp<100;});
+  const completedPods=db.podcasts.filter(p=>{const pp=podcastProgress(p.id);return pp!==null&&pp>=100;});
+  el.innerHTML=`<div class="card-grid">${activePods.map(p=>{
     const ec=db.episodes.filter(e=>e.podcast_id===p.id).length,prod=pById(p.producer),epPerson=pById(p.ep),apPerson=pById(p.ap);
     const taskPct=podcastProgress(p.id),epInfo=podcastEpisodeProgress(p.id);
     const pct=taskPct===null?0:taskPct;
