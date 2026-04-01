@@ -640,23 +640,34 @@ function renderPodcasts(){
       </div>
     </div>`;
   }).join('')}</div>
-    ${completedPods.length?`
-    <div style="margin-top:28px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer" onclick="this.nextElementSibling.classList.toggle('hidden');this.querySelector('.caret').textContent=this.nextElementSibling.classList.contains('hidden')?'▸':'▾'">
-        <span class="caret" style="color:var(--text-dim);font-size:12px">▸</span>
-        <span style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Completed Podcasts (${completedPods.length})</span>
-      </div>
-      <div class="card-grid hidden">${completedPods.map(p=>{
-        const ec=db.episodes.filter(e=>e.podcast_id===p.id).length,prod=pById(p.producer),epPerson=pById(p.ep),apPerson=pById(p.ap);
-        return\`<div class="card" style="opacity:.5" onclick="navigate('episodes','${p.id}')">
-          <div class="card-actions"><div class="icon-btn danger" onclick="event.stopPropagation();deletePodcast('${p.id}')">🗑</div></div>
-          <div class="card-label">${p.company||''} ${p.contact?'· '+p.contact:''}</div>
-          <div class="card-title">${p.name}</div>
-          <div class="card-meta"><span class="card-badge badge-${(p.type||'interview').toLowerCase()}">${p.type}</span><br>${ec} episodes · <span style="color:var(--complete-text)">✓ Complete</span></div>
-        </div>\`;
-      }).join('')}</div>
-    </div>`:''}
+    ${completedPods.length ? buildCompletedPodsSection(completedPods) : ''}
   `;
+}
+
+function buildCompletedPodsSection(completedPods){
+  const cards = completedPods.map(function(p){
+    const ec = db.episodes.filter(function(e){return e.podcast_id===p.id;}).length;
+    const podId = p.id;
+    const badge = (p.type||'interview').toLowerCase();
+    return [
+      '<div class="card" style="opacity:.5" onclick="navigate(\x27episodes\x27,\x27'+podId+'\x27)">',
+      '<div class="card-actions"><div class="icon-btn danger" onclick="event.stopPropagation();deletePodcast(\x27'+podId+'\x27)">🗑</div></div>',
+      '<div class="card-label">'+(p.company||'')+' '+(p.contact?'&middot; '+p.contact:'')+'</div>',
+      '<div class="card-title">'+p.name+'</div>',
+      '<div class="card-meta"><span class="card-badge badge-'+badge+'">'+p.type+'</span><br>'+ec+' episode'+(ec!==1?'s':'')+' &middot; <span style="color:var(--complete-text)">&#10003; Complete</span></div>',
+      '</div>'
+    ].join('');
+  }).join('');
+  const toggle = 'this.nextElementSibling.classList.toggle(\x27hidden\x27);this.querySelector(\x27.caret\x27).textContent=this.nextElementSibling.classList.contains(\x27hidden\x27)?\x27&#9656;\x27:\x27&#9662;\x27';
+  return [
+    '<div style="margin-top:28px">',
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer" onclick="'+toggle+'">',
+    '<span class="caret" style="color:var(--text-dim);font-size:12px">&#9656;</span>',
+    '<span style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Completed Podcasts ('+completedPods.length+')</span>',
+    '</div>',
+    '<div class="card-grid hidden">'+cards+'</div>',
+    '</div>'
+  ].join('');
 }
 
 async function deletePodcast(id){
@@ -1746,16 +1757,15 @@ async function sendUrgentReminders(){
 
 function renderEmailConfig(){
   const hasKey = !!RESEND_KEY;
-  document.getElementById('emailConfigSection').innerHTML = \`
-    <div class="section-header"><div class="section-title">Email Settings</div></div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;max-width:500px">
-      \${hasKey
-        ? '<div style="color:var(--complete-text);margin-bottom:12px">✓ Resend connected</div>'
-        : '<div style="color:var(--accent2);margin-bottom:12px">⚠ No Resend API key configured</div><p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Sign up free at <a href=\"https://resend.com\" target=\"_blank\" style=\"color:var(--accent)\">resend.com</a>, get your API key, then ask Emma to add it to the app code. You also need a verified sending domain.</p>'
-      }
-      <p style="font-size:12px;color:var(--text-muted)">Once configured, use <strong>📧 Notify Team</strong> on any episode to email the team their tasks, and <strong>⏰ Send Reminders</strong> on the dashboard to alert everyone with tasks due in 3 days.</p>
-    </div>
-  \`;
+  const keyStatus = hasKey
+    ? '<div style="color:var(--complete-text);margin-bottom:12px">&#10003; Resend connected</div>'
+    : '<div style="color:var(--accent2);margin-bottom:12px">&#9888; No Resend API key configured</div><p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Sign up free at <a href="https://resend.com" target="_blank" style="color:var(--accent)">resend.com</a>, get your API key, then ask Emma to add it to the app code. You also need a verified sending domain.</p>';
+  document.getElementById('emailConfigSection').innerHTML =
+    '<div class="section-header"><div class="section-title">Email Settings</div></div>' +
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;max-width:500px">' +
+    keyStatus +
+    '<p style="font-size:12px;color:var(--text-muted)">Once configured, use <strong>&#128231; Notify Team</strong> on any episode to email the team their tasks, and <strong>&#9200; Send Reminders</strong> on the dashboard to alert everyone with tasks due in 3 days.</p>' +
+    '</div>';
 }
 
 // ============================================================
