@@ -259,8 +259,17 @@
           <select class="filter-select" id="todoFilterPerson" onchange="renderTodos()"><option value="">All People</option></select>
           <select class="filter-select" id="todoFilterPodcast" onchange="renderTodos()"><option value="">All Podcasts</option></select>
           <select class="filter-select" id="todoFilterStatus" onchange="renderTodos()"><option value="">All Statuses</option><option>To Do</option><option>In Progress</option><option>In Review</option><option>Waiting / Blocked</option><option>Complete</option></select>
+          <div class="view-toggle" style="margin-left:auto">
+            <button class="view-toggle-btn active" id="toggleTodoTable" onclick="setTodoView('table')">≡ Table</button>
+            <button class="view-toggle-btn" id="toggleTodoKanban" onclick="setTodoView('kanban')">⊞ Kanban</button>
+          </div>
         </div>
-        <table><thead><tr><th>Task</th><th>Assigned To</th><th>Podcast</th><th>Due Date</th><th>Status</th><th>Notes</th></tr></thead><tbody id="todosBody"></tbody></table>
+        <div id="todosTableView">
+          <table><thead><tr><th>Task</th><th>Assigned To</th><th>Podcast</th><th>Due Date</th><th>Status</th><th>Notes</th></tr></thead><tbody id="todosBody"></tbody></table>
+        </div>
+        <div id="todosKanbanView" class="hidden">
+          <div class="kanban-board" id="todoKanbanBoard"></div>
+        </div>
       </div>
       <div id="view-people" class="hidden"><div class="people-grid" id="peopleGrid"></div><div id="emailConfigSection" style="margin-top:32px"></div></div>
     </div>
@@ -772,10 +781,22 @@ function setTaskView(mode){
 
 function getFilteredTasks(){
   const sf=document.getElementById('filterStatus').value,pf=document.getElementById('filterPodcast').value,rf=document.getElementById('filterRole').value;
+  // Episode tasks
   let tasks=[...db.tasks];
-  if(sf)tasks=tasks.filter(t=>t.status===sf);
-  if(rf)tasks=tasks.filter(t=>t.role===rf);
+  if(!sf) tasks=tasks.filter(t=>t.status!=='Complete');
+  if(sf) tasks=tasks.filter(t=>t.status===sf);
+  if(rf) tasks=tasks.filter(t=>t.role===rf);
   if(pf){const eids=db.episodes.filter(e=>e.podcast_id===pf).map(e=>e.id);tasks=tasks.filter(t=>eids.includes(t.episode_id));}
+  // Add todos (tagged so we know how to render them)
+  if(!rf){ // todos have no role so only include when no role filter
+    let todos=[...db.todos];
+    if(!sf) todos=todos.filter(t=>t.status!=='Complete');
+    if(sf) todos=todos.filter(t=>t.status===sf);
+    if(pf) todos=todos.filter(t=>t.podcast_id===pf);
+    // Tag todos so renderer knows
+    todos.forEach(t=>t._isTodo=true);
+    tasks=[...tasks,...todos];
+  }
   tasks.sort((a,b)=>(a.due_date||'z').localeCompare(b.due_date||'z'));
   return tasks;
 }
@@ -785,9 +806,32 @@ function renderAllTasks(){
   const tasks=getFilteredTasks();
   const today=new Date();
   document.getElementById('allTasksBody').innerHTML=tasks.length?tasks.map(t=>{
-    const ep=epById(t.episode_id),pod=ep?podById(ep.podcast_id):null,person=t.assigned_to?pById(t.assigned_to):null,od=t.due_date&&new Date(t.due_date)<today&&t.status!=='Complete';
-    return`<tr class="clickable" onclick="navigate('episode-tasks','${t.episode_id}')"><td>${pod?pod.name:'—'}</td><td>${ep?`<span class="ep-num">${ep.default_title||'E'+ep.number}</span><span style="color:var(--text-muted);font-size:11px;margin-left:4px">${ep.title||''}</span>`:'—'}</td><td>${t.name}</td><td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">Unassigned</span>'}</td><td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td><td><button class="status-pill ${scls(t.status)}" onclick="event.stopPropagation();qCycle('${t.id}')">${t.status}</button></td></tr>`;
-  }).join(''):`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">No tasks match your filters.</td></tr>`;
+    const od=t.due_date&&new Date(t.due_date)<today&&t.status!=='Complete';
+    if(t._isTodo){
+      const person=t.assigned_to?pById(t.assigned_to):null;
+      const pod=t.podcast_id?podById(t.podcast_id):null;
+      const epObj=t.episode_id?epById(t.episode_id):null;
+      return`<tr class="clickable" onclick="openEditTodoModal('${t.id}')">
+        <td onclick="event.stopPropagation()"><input type="checkbox" class="task-select-cb" data-id="${t.id}" data-todo="true" onclick="onTaskCheckbox()" style="accent-color:var(--accent)"></td>
+        <td>${pod?pod.name:'<span style="color:var(--text-muted)">—</span>'}</td>
+        <td>${epObj?`<span class="ep-num">${epObj.default_title||'E'+epObj.number}</span>`:'<span style="color:var(--text-dim);font-size:11px">to-do</span>'}</td>
+        <td>${t.name} <span style="font-size:10px;color:var(--text-dim);margin-left:4px">📝</span></td>
+        <td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">Unassigned</span>'}</td>
+        <td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td>
+        <td><button class="status-pill ${scls(t.status)}" onclick="event.stopPropagation();cycleTodoById('${t.id}')">${t.status}</button></td>
+      </tr>`;
+    }
+    const ep=epById(t.episode_id),pod=ep?podById(ep.podcast_id):null,person=t.assigned_to?pById(t.assigned_to):null;
+    return`<tr class="clickable" onclick="navigate('episode-tasks','${t.episode_id}')">
+      <td onclick="event.stopPropagation()"><input type="checkbox" class="task-select-cb" data-id="${t.id}" onclick="onTaskCheckbox()" style="accent-color:var(--accent)"></td>
+      <td>${pod?pod.name:'—'}</td>
+      <td>${ep?`<span class="ep-num">${ep.default_title||'E'+ep.number}</span><span style="color:var(--text-muted);font-size:11px;margin-left:4px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle">${ep.title||''}</span>`:'—'}</td>
+      <td>${t.name}</td>
+      <td>${person?`<span class="assignee-chip"><span class="avatar">${ini(person.name)}</span>${person.name}</span>`:'<span style="color:var(--text-muted)">Unassigned</span>'}</td>
+      <td class="${od?'date-overdue':''}">${formatDate(t.due_date)}</td>
+      <td><button class="status-pill ${scls(t.status)}" onclick="event.stopPropagation();qCycle('${t.id}')">${t.status}</button></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">No tasks match your filters.</td></tr>`;
 }
 
 function renderKanban(){
@@ -1239,6 +1283,7 @@ function renderTodos(){
   const today=new Date();
   const tbody=document.getElementById('todosBody');
   if(!todos.length){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">No to-dos yet. Hit + New To-Do to add one.</td></tr>`;return;}
+  if(todoViewMode==='kanban'){renderTodoKanban(todos);return;}
   tbody.innerHTML=todos.map(t=>{
     const person=t.assigned_to?pById(t.assigned_to):null;
     const pod=t.podcast_id?podById(t.podcast_id):null;
@@ -1260,6 +1305,8 @@ function renderTodos(){
     </tr>`;
   }).join('');
 }
+
+function cycleTodoById(id){cycleTodo(id);}
 
 async function cycleTodo(id){
   const t=db.todos.find(t=>t.id===id);if(!t)return;
