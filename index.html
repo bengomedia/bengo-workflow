@@ -215,7 +215,7 @@
         <div class="task-filters">
           <select class="filter-select" id="filterStatus" onchange="renderAllTasks()"><option value="">All Statuses</option><option>To Do</option><option>In Progress</option><option>In Review</option><option>Waiting / Blocked</option><option>Complete</option></select>
           <select class="filter-select" id="filterPodcast" onchange="renderAllTasks()"><option value="">All Podcasts</option></select>
-          <select class="filter-select" id="filterRole" onchange="renderAllTasks()"><option value="">All Roles</option><option>Producer</option><option>Editor</option><option>Executive Producer</option><option>Accounts</option></select>
+          <select class="filter-select" id="filterRole" onchange="renderAllTasks()"><option value="">All Roles</option><option>Producer</option><option>Editor</option><option>Executive Producer</option><option>Marketer</option><option>Accounts</option></select>
           <div class="view-toggle">
             <button class="view-toggle-btn active" id="toggleTable" onclick="setTaskView('table')">≡ Table</button>
             <button class="view-toggle-btn" id="toggleKanban" onclick="setTaskView('kanban')">⊞ Kanban</button>
@@ -280,7 +280,7 @@
 <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModalOnOverlay(event)">
   <div class="modal hidden" id="modalPodcast">
     <div class="modal-title" id="podcastModalTitle">New Podcast</div>
-    <div class="form-row"><div class="form-group"><label>Podcast Name</label><input type="text" id="f-podName" placeholder="e.g. The Bengo Show"></div><div class="form-group"><label>Podcast Type</label><select id="f-podType"><option>Interview</option><option>Solo</option><option>Panel</option><option>Scripted</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label>Podcast Name</label><input type="text" id="f-podName" placeholder="e.g. The Bengo Show"></div><div class="form-group"><label>Podcast Type</label><select id="f-podType"><option>Interview</option><option>Solo</option><option>Panel</option><option>Scripted</option><option>Full Production</option></select></div></div>
     <div class="form-row"><div class="form-group"><label>Client / Company</label><input type="text" id="f-podCompany"></div><div class="form-group"><label>Contact Name</label><input type="text" id="f-podContact"></div></div>
     <div class="form-row"><div class="form-group"><label>Executive Producer</label><select id="f-podEP"></select></div><div class="form-group"><label>Producer</label><select id="f-podProducer"></select></div></div>
     <div class="form-row"><div class="form-group"><label>Assistant Producer (optional)</label><select id="f-podAP"></select></div><div class="form-group"><label>Editor</label><select id="f-podEditor"></select></div></div>
@@ -317,7 +317,7 @@
   <div class="modal hidden" id="modalPerson">
     <div class="modal-title" id="personModalTitle">Add Person</div>
     <div class="form-row"><div class="form-group"><label>Full Name</label><input type="text" id="f-personName"></div><div class="form-group"><label>Email</label><input type="email" id="f-personEmail"></div></div>
-    <div class="form-row"><div class="form-group"><label>Role</label><select id="f-personRole"><option>Producer</option><option>Editor</option><option>Executive Producer</option><option>Accounts</option><option>Admin</option></select></div><div class="form-group"><label>App Access</label><select id="f-personUserRole"><option value="User">User</option><option value="Admin">Admin</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label>Role</label><select id="f-personRole"><option>Producer</option><option>Editor</option><option>Executive Producer</option><option>Marketer</option><option>Accounts</option><option>Admin</option></select></div><div class="form-group"><label>App Access</label><select id="f-personUserRole"><option value="User">User</option><option value="Admin">Admin</option></select></div></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" id="savePersonBtn" onclick="savePerson()">Save</button></div>
   </div>
 
@@ -329,7 +329,7 @@
       <div class="form-group"><label>Due Date</label><input type="date" id="f-todoDue"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Link to Podcast (optional)</label><select id="f-todoPodcast"><option value="">— None —</option></select></div>
+      <div class="form-group"><label>Link to Podcast (optional)</label><select id="f-todoPodcast" onchange="populateTodoEpisodes()"><option value="">— None —</option></select></div>
       <div class="form-group"><label>Status</label><select id="f-todoStatus"><option>To Do</option><option>In Progress</option><option>In Review</option><option>Waiting / Blocked</option><option>Complete</option></select></div>
     </div>
     <div class="form-group"><label>Link to Episode (optional)</label><select id="f-todoEpisode"><option value="">— None —</option></select></div>
@@ -363,7 +363,7 @@
       <div class="form-group"><label>Due Date</label><input type="date" id="f-adhocDue"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Role</label><select id="f-adhocRole"><option>Producer</option><option>Editor</option><option>Executive Producer</option><option>Accounts</option><option>Admin</option></select></div>
+      <div class="form-group"><label>Role</label><select id="f-adhocRole"><option>Producer</option><option>Editor</option><option>Executive Producer</option><option>Marketer</option><option>Accounts</option><option>Admin</option></select></div>
       <div class="form-group"><label>Add to</label><select id="f-adhocScope"><option value="this">This episode only</option><option value="all">All remaining incomplete episodes</option></select></div>
     </div>
     <div class="form-group"><label>Notes</label><textarea id="f-adhocNotes" rows="2" placeholder="Any extra detail..."></textarea></div>
@@ -496,6 +496,41 @@ const TEMPLATES={
     {id:'TT-3125',name:'EP Confirms Invoice Amount',role:'Executive Producer',order:125,days:0},
     {id:'TT-3130',name:'Invoice Raised',role:'Accounts',order:130,days:0},
     {id:'TT-3135',name:'Payment Received',role:'Accounts',order:135,days:0},
+  ],
+  'Full Production':[
+    // Phase 1: Discovery & Development (series — episode 1 only)
+    {id:'TT-4010',name:'Initial Client Meeting',role:'Executive Producer',order:100,days:120,series:true},
+    {id:'TT-4020',name:'Concept & Format Development',role:'Executive Producer',order:200,days:110,series:true},
+    {id:'TT-4030',name:'Budget Sign-Off',role:'Executive Producer',order:300,days:105,series:true},
+    // Phase 2: Pre-Production (series)
+    {id:'TT-4040',name:'Script / Format Guide Created',role:'Producer',order:400,days:90,series:true},
+    {id:'TT-4050',name:'Talent / Host Confirmed',role:'Executive Producer',order:500,days:85,series:true},
+    {id:'TT-4060',name:'Episode Arc Planned',role:'Producer',order:600,days:80,series:true},
+    // Phase 5: Marketing & PR Prep (series)
+    {id:'TT-4120',name:'Press Kit Created',role:'Producer',order:1200,days:60,series:true},
+    {id:'TT-4130',name:'Social Media Plan',role:'Producer',order:1300,days:55,series:true},
+    // Phase 6: Sponsors (series)
+    {id:'TT-4140',name:'Sponsor Brief Created',role:'Executive Producer',order:1400,days:90,series:true},
+    {id:'TT-4150',name:'Sponsor Confirmed',role:'Executive Producer',order:1500,days:60,series:true},
+    // Phase 7: Tech Set-Up (series)
+    {id:'TT-4160',name:'Hosting Platform Set Up',role:'Producer',order:1600,days:21,series:true},
+    {id:'TT-4170',name:'RSS Feed Configured',role:'Producer',order:1700,days:18,series:true},
+    {id:'TT-4180',name:'Distribution Set Up',role:'Producer',order:1800,days:14,series:true},
+    // Phase 3: Production (per episode)
+    {id:'TT-4070',name:'Recording Scheduled',role:'Producer',order:700,days:30},
+    {id:'TT-4080',name:'Episode Recorded',role:'Producer',order:800,days:25},
+    // Phase 4: Post Production (per episode)
+    {id:'TT-4090',name:'Audio Edited',role:'Editor',order:900,days:21},
+    {id:'TT-4100',name:"Episode Exec'd",role:'Executive Producer',order:1000,days:14},
+    {id:'TT-4110',name:'Sent to Client',role:'Executive Producer',order:1100,days:10},
+    // Phase 8: Launch & Promotion (per episode)
+    {id:'TT-4190',name:'Social Media Clips Produced',role:'Producer',order:1900,days:7},
+    {id:'TT-4200',name:"Social Media Clips Exec'd",role:'Executive Producer',order:2000,days:5},
+    {id:'TT-4210',name:'Podcast Scheduled',role:'Executive Producer',order:2100,days:1},
+    {id:'TT-4220',name:'Podcast Launched',role:'Executive Producer',order:2200,days:0},
+    {id:'TT-4230',name:'EP Confirms Invoice Amount',role:'Executive Producer',order:2300,days:0},
+    {id:'TT-4240',name:'Invoice Raised',role:'Accounts',order:2400,days:0},
+    {id:'TT-4250',name:'Payment Received',role:'Accounts',order:2500,days:0},
   ]
 };
 
@@ -812,6 +847,7 @@ function progressRing(pct,size,stroke,color){
 function populateTaskFilters(){document.getElementById('filterPodcast').innerHTML='<option value="">All Podcasts</option>'+db.podcasts.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');}
 
 let taskViewMode = 'table';
+let todoViewMode = 'table';
 
 function setTaskView(mode){
   taskViewMode = mode;
@@ -820,6 +856,15 @@ function setTaskView(mode){
   document.getElementById('tasksTableView').classList.toggle('hidden', mode!=='table');
   document.getElementById('tasksKanbanView').classList.toggle('hidden', mode!=='kanban');
   renderAllTasks();
+}
+
+function setTodoView(mode){
+  todoViewMode = mode;
+  document.getElementById('toggleTodoTable').classList.toggle('active', mode==='table');
+  document.getElementById('toggleTodoKanban').classList.toggle('active', mode==='kanban');
+  document.getElementById('todosTableView').classList.toggle('hidden', mode!=='table');
+  document.getElementById('todosKanbanView').classList.toggle('hidden', mode!=='kanban');
+  renderTodos();
 }
 
 function getFilteredTasks(){
@@ -932,8 +977,46 @@ function renderKanban(){
 function toggleKanbanComplete(){
   const board = document.getElementById('kanbanBoard');
   board.classList.toggle('show-complete');
-  board.style.gridTemplateColumns = board.classList.contains('show-complete') ? 'repeat(4,1fr)' : 'repeat(3,1fr) 48px';
+  board.style.gridTemplateColumns = board.classList.contains('show-complete') ? 'repeat(5,1fr)' : 'repeat(4,1fr) 48px';
   renderKanban();
+}
+
+function renderTodoKanban(todos){
+  const today=new Date();
+  const cols=[
+    {key:'To Do',cls:'todo',label:'To Do'},
+    {key:'In Progress',cls:'inprogress',label:'In Progress'},
+    {key:'In Review',cls:'inreview',label:'In Review'},
+    {key:'Waiting / Blocked',cls:'waiting',label:'Waiting'},
+    {key:'Complete',cls:'complete',label:'Complete'},
+  ];
+  const nextLabel={'To Do':'▶ Start','In Progress':'👁 Review','In Review':'⏸ Block','Waiting / Blocked':'✓ Complete','Complete':'↺ Reopen'};
+  document.getElementById('todoKanbanBoard').innerHTML=cols.map(col=>{
+    const colTodos=todos.filter(t=>t.status===col.key);
+    const cards=colTodos.length?colTodos.map(t=>{
+      const person=t.assigned_to?pById(t.assigned_to):null;
+      const pod=t.podcast_id?podById(t.podcast_id):null;
+      const od=t.due_date&&new Date(t.due_date)<today&&t.status!=='Complete';
+      return`<div class="kanban-card" onclick="openEditTodoModal('${t.id}')">
+        <div class="kanban-card-title">${t.name}</div>
+        <div class="kanban-card-meta">
+          ${pod?`<span class="kanban-card-ep">${pod.name}</span>`:''}
+          ${person?`<span>${person.name}</span>`:''}
+          ${t.due_date?`<span class="${od?'kanban-card-overdue':''}">${od?'⚠ ':''}${formatDate(t.due_date)}</span>`:''}
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+          <button class="status-pill ${scls(t.status)}" style="font-size:10px;padding:2px 8px" onclick="event.stopPropagation();cycleTodo('${t.id}')">${nextLabel[t.status]||'▶'}</button>
+        </div>
+      </div>`;
+    }).join(''):`<div class="kanban-empty">Nothing here</div>`;
+    return`<div class="kanban-col">
+      <div class="kanban-col-header ${col.cls}">
+        <span>${col.label}</span>
+        <span class="kanban-col-count">${colTodos.length}</span>
+      </div>
+      <div class="kanban-cards">${cards}</div>
+    </div>`;
+  }).join('');
 }
 
 function onUserChange(){currentUser=document.getElementById('currentUser').value;if(currentView==='mytasks')renderMyTasks();}
@@ -1206,13 +1289,17 @@ async function savePodcast(){
     const pod={id:uid(),name,type:document.getElementById('f-podType').value,company:document.getElementById('f-podCompany').value.trim(),contact:document.getElementById('f-podContact').value.trim(),ep:document.getElementById('f-podEP').value||null,producer:document.getElementById('f-podProducer').value||null,ap:document.getElementById('f-podAP').value||null,editor:document.getElementById('f-podEditor').value||null,accounts:document.getElementById('f-podAccounts').value||null,season:document.getElementById('f-podSeason').value,episode_count:parseInt(document.getElementById('f-podEpCount').value)||6,frequency:document.getElementById('f-podFreq').value};
     await api.post('podcasts',pod);db.podcasts.push(pod);
     const tmpls=TEMPLATES[pod.type]||TEMPLATES.Interview,interval=freqDays(pod.frequency),sn=String(pod.season).padStart(2,'0');
+    const isFullProd=pod.type==='Full Production';
     for(let i=0;i<pod.episode_count;i++){
       const epLaunch=addDays(ld,i*interval),en=String(i+1).padStart(2,'0');
       const ep={id:uid(),podcast_id:pod.id,number:i+1,title:'',default_title:`S${sn}E${en}`,launch_date:epLaunch,status:'To Do'};
       await api.post('episodes',ep);db.episodes.push(ep);
-      for(const tmpl of tmpls){
+      // Full Production: series tasks only on episode 1 (counted from series launch date)
+      const activeTmpls=isFullProd&&i>0?tmpls.filter(t=>!t.series):tmpls;
+      for(const tmpl of activeTmpls){
         const rm={'Executive Producer':pod.ep,'Producer':pod.producer,'Assistant Producer':pod.ap||null,'Editor':pod.editor,'Accounts':pod.accounts||null};
-        const task={id:uid(),episode_id:ep.id,name:tmpl.name,role:tmpl.role,assigned_to:rm[tmpl.role]||null,status:'To Do',due_date:tmpl.days>0?addDays(epLaunch,-tmpl.days):epLaunch,start_date:null,task_order:tmpl.order,notes:''};
+        const launchRef=tmpl.series?ld:epLaunch;
+        const task={id:uid(),episode_id:ep.id,name:tmpl.name,role:tmpl.role,assigned_to:rm[tmpl.role]||null,status:'To Do',due_date:tmpl.days>0?addDays(launchRef,-tmpl.days):launchRef,start_date:null,task_order:tmpl.order,notes:''};
         await api.post('tasks',task);db.tasks.push(task);
       }
     }
@@ -1236,12 +1323,14 @@ async function saveEpisode(){
     const ep={id:uid(),podcast_id:currentPodcastId,number:num,title:document.getElementById('f-epTitle').value.trim(),default_title:`S${sn}E${en}`,launch_date:dv,status:'To Do'};
     await api.post('episodes',ep);db.episodes.push(ep);
     const tmpls=TEMPLATES[pod.type]||TEMPLATES.Interview;
-    for(const tmpl of tmpls){
+    // Full Production: individually-added episodes only get per-episode tasks (series tasks live on ep1)
+    const activeTmpls=pod.type==='Full Production'?tmpls.filter(t=>!t.series):tmpls;
+    for(const tmpl of activeTmpls){
       const rm={'Executive Producer':pod.ep,'Producer':pod.producer,'Assistant Producer':pod.ap||null,'Editor':pod.editor,'Accounts':pod.accounts||null};
       const task={id:uid(),episode_id:ep.id,name:tmpl.name,role:tmpl.role,assigned_to:rm[tmpl.role]||null,status:'To Do',due_date:tmpl.days>0?addDays(dv,-tmpl.days):dv,start_date:null,task_order:tmpl.order,notes:''};
       await api.post('tasks',task);db.tasks.push(task);
     }
-    setSync('live');closeModal();renderEpisodes();notify(`Episode created with ${tmpls.length} tasks!`);
+    setSync('live');closeModal();renderEpisodes();notify(`Episode created with ${activeTmpls.length} tasks!`);
   }catch(e){setSync('error');notify('Error: '+e.message,true);}
   finally{btn.disabled=false;btn.textContent='Create Episode + Tasks';}
 }
@@ -1325,8 +1414,8 @@ function renderTodos(){
   todos.sort((a,b)=>(a.due_date||'z').localeCompare(b.due_date||'z'));
   const today=new Date();
   const tbody=document.getElementById('todosBody');
-  if(!todos.length){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">No to-dos yet. Hit + New To-Do to add one.</td></tr>`;return;}
   if(todoViewMode==='kanban'){renderTodoKanban(todos);return;}
+  if(!todos.length){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">No to-dos yet. Hit + New To-Do to add one.</td></tr>`;return;}
   tbody.innerHTML=todos.map(t=>{
     const person=t.assigned_to?pById(t.assigned_to):null;
     const pod=t.podcast_id?podById(t.podcast_id):null;
@@ -1507,6 +1596,18 @@ async function saveAdhocTask(){
 let importRows = [];
 
 
+function parseCSVRow(row){
+  const vals=[];let cur='',inQuote=false;
+  for(let i=0;i<row.length;i++){
+    const ch=row[i];
+    if(ch==='"'){if(inQuote&&row[i+1]==='"'){cur+='"';i++;}else inQuote=!inQuote;}
+    else if(ch===','&&!inQuote){vals.push(cur.trim());cur='';}
+    else cur+=ch;
+  }
+  vals.push(cur.trim());
+  return vals;
+}
+
 function parseImportDate(val){
   if(!val||!val.trim()) return null;
   val = val.trim();
@@ -1576,7 +1677,7 @@ function previewImportCSV(){
     const headers = lines[0].toLowerCase().split(',').map(h=>h.trim());
     const rows = lines.slice(1).filter(l=>l.trim());
     importRows = rows.map(row=>{
-      const vals = row.split(',').map(v=>v.trim());
+      const vals = parseCSVRow(row);
       const obj = {};
       headers.forEach((h,i)=>obj[h]=vals[i]||'');
       return obj;
@@ -1762,8 +1863,8 @@ async function applyBulkUpdate(){
 // ============================================================
 // EMAIL NOTIFICATIONS (Resend)
 // ============================================================
-const RESEND_KEY = ''; // Paste your Resend API key here
-const FROM_EMAIL = 'workflow@bengomedia.com'; // Update to your verified sending domain
+const RESEND_KEY = 're_CnjUNydC_4tzcnXwEd4eHjxnwRxVchMcq';
+const FROM_EMAIL = 'onboarding@resend.dev'; // Temporary -- swap to workflow@bengomedia.com once domain is verified
 
 async function sendEmail(to, subject, html){
   if(!RESEND_KEY){ notify('Add your Resend API key to enable emails', true); return false; }
@@ -1904,6 +2005,8 @@ async function saveBatchEpisodes(){
   try{
     const interval = freqDays(pod.frequency);
     const tmpls = TEMPLATES[pod.type]||TEMPLATES.Interview;
+    // Full Production: batch episodes only get per-episode tasks (series tasks already on ep1)
+    const activeTmpls = pod.type==='Full Production' ? tmpls.filter(t=>!t.series) : tmpls;
     const sn = String(pod.season).padStart(2,'0');
     let startNum = lastEp.number + 1;
 
@@ -1913,7 +2016,7 @@ async function saveBatchEpisodes(){
       const ep = {id:uid(),podcast_id:batchPodcastId,number:startNum+i,title:'',default_title:`S${sn}E${en}`,launch_date:epLaunch,status:'To Do'};
       await api.post('episodes',ep);
       db.episodes.push(ep);
-      for(const tmpl of tmpls){
+      for(const tmpl of activeTmpls){
         const rm={'Executive Producer':pod.ep,'Producer':pod.producer,'Assistant Producer':pod.ap||null,'Editor':pod.editor,'Accounts':pod.accounts};
         const task={id:uid(),episode_id:ep.id,name:tmpl.name,role:tmpl.role,assigned_to:rm[tmpl.role]||null,status:'To Do',due_date:tmpl.days>0?addDays(epLaunch,-tmpl.days):epLaunch,start_date:null,task_order:tmpl.order,notes:''};
         await api.post('tasks',task);
@@ -2001,16 +2104,6 @@ async function saveReschedule(){
   } finally {
     btn.disabled = false;
     btn.textContent = 'Reschedule + Shift Tasks';
-  }
-}
-
-async function checkApColumn(){
-  // Silently check if ap column exists by trying to read it
-  try{
-    await api.get('podcasts','select=ap&limit=1');
-  }catch(err){
-    // Column may not exist yet - user needs to run SQL
-    console.log('AP column may need adding to podcasts table');
   }
 }
 
